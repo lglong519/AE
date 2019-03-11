@@ -18,8 +18,8 @@ namespace s1
             InitializeComponent();
             //string path = @"C:\Users\pc\Desktop\test1\";
             //string fileName = @"test1.mxd";
-            string path = @"C:\Users\pc\Desktop\乐平镇试验数据\";
-            string fileName = @"乐平试验.mxd";
+            string path = @"C:\Users\Administrator\Documents\Visual Studio 2010\Projects\data\test\";
+            string fileName = @"test.mxd";
             //string path = @"C:\Users\pc\Documents\Visual Studio 2010\C\AE\第五章\lesson3\data\World\";
             //string fileName = @"World.mxd";
             axMapControl1.LoadMxFile(path + fileName);

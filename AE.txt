@@ -1,0 +1,44 @@
+控件
+	制图控件
+		MapControl
+			实线的主要接口：
+				IMapControlDefault
+				IMapControl2
+					设置控件外观、显示属性、Map 对象，添加/管理图层、地图文档，绘制图形，返回几何体
+				IMapControl3
+					继承自 IMapControl2
+					新增属性：
+						CustomProperty
+						DocumentFilename
+						DocumentMap
+						KyeIntercept
+						Object
+						ShowMapTips
+						TipDelay
+						TipStyle
+						SuppressResizeDrawing()
+				IMapControlEvent2
+					定义了 MapControl 全部事件
+		PageLayoutControl
+			布局与制图
+			PageLayout: 控制元素属性和方法
+			通过 mxd 加载数据
+			实现接口：IPageLayoutControlDefault、IPageLayoutControl、IPageLayoutControl2、IPageLayoutControlEvents
+				IPageLayoutControlDefault 界面调用默认接口
+	三维控件
+		GlobalControl
+		SceneControl
+	框架控件
+		TOCControl
+			图层树控件：管理图层可见和标签的编辑
+			接口:
+				ITOCControl：控件外观、设置关联控件
+				ITOCControlEvents：定义了 TOCControl
+		ToolbarControl
+			6个对象及接口：
+				ToolbarControl
+				ToolbarItem
+				ToolbarMenu
+				ToolbarPool
+				CustomizeDialog
+				MissingCommand
