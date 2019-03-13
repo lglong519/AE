@@ -42,3 +42,39 @@
 				ToolbarPool
 				CustomizeDialog
 				MissingCommand
+3.几何对象和空间坐标
+	Geometry
+	Envelope：包络线
+		接口：IEnvelope
+			属性：XMax，XMin，YMax，YMin，Height，Width
+			方法：Intersect、Union、Expand、offset、CenterAt、 PutCoords
+	Curve
+		属性：length、FromPoint、ToPoint、isClose
+		方法：ReverseOrientation
+		segment
+			接口：ISegment
+				属性：
+				方法：SplitAtDistance、SplitDivideLength
+			1.CircularArc
+				接口：ICircularArc
+					属性：FromAngle、ToAngle、CentralAngle、CenterPoint、ChordHeight、Isline、IsPoint、IsMinor、IsCounterClockwise
+					方法：Complement
+			2.Line
+				接口：ILine
+					属性：Angle
+					方法：QueryCoords、PutCoords
+4.地图组成及图层控制
+	1.地图对象 Map
+		35个接口：
+			1.IMap
+				ActiveGraphicsLayer
+				AddLayer
+				AddLayers
+				AddMapSurround
+				AnnotationEngine
+				BasicGraphicsLayer
+				ClearSelection
+				SelectByShape
+			2.
+	2.图层对象 Layer
+	

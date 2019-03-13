@@ -46,7 +46,7 @@ namespace s2
         {
             saveAsMapDocument();
         }
-        // 加载地图文档
+        // mxd 加载地图文档
         private void loadMapDocument()
         {
             mapDocument = new ESRI.ArcGIS.Carto.MapDocumentClass();
@@ -80,7 +80,7 @@ namespace s2
 
 
         }
-        // 加载特定地图
+        // mxd 加载特定地图
         private void loadMapDocument2()
         {
             mapDocument = new ESRI.ArcGIS.Carto.MapDocumentClass();
@@ -126,7 +126,7 @@ namespace s2
                 mapDocument = null;
             }
         }
-        // 保存
+        // 保存mxd
         private void saveMapDocument()
         {
             if (mapDocument == null)
@@ -160,7 +160,7 @@ namespace s2
                 }
             }
         }
-        // 另存
+        // 另存mxd
         private void saveAsMapDocument()
         {
             if (mapDocument == null)
