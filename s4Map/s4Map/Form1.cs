@@ -62,6 +62,7 @@ namespace s4Map
         // 鼠标按下事件
         private void axMapControl1_OnMouseDown(object sender, IMapControlEvents2_OnMouseDownEvent e)
         {
+            /*
             IMap pMap = axMapControl1.Map;
             IActiveView activeView = pMap as IActiveView;
             // TrackRectangle 返回 axMapControl1 的 IEnvelope，通过该对象选择实体？
@@ -75,6 +76,7 @@ namespace s4Map
             // 
             pMap.SelectByShape(pEnv, PSelectionEnv,false);
             activeView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection,null,null);
+            */
         }
         private IRgbColor getRGB(int r,int g,int b)
         {
@@ -95,6 +97,27 @@ namespace s4Map
                 prop += p;
             }
             MessageBox.Show(prop);
+        }
+
+        private void simpleButton2_Click(object sender, EventArgs e)
+        {
+            IGraphicsContainer graphicsContainer;
+            IMap map = axMapControl1.Map;
+            ILineElement lineElement = new LineElementClass();
+            IElement element;
+            IPolyline polyline = new PolylineClass();
+            IPoint point = new PointClass();
+            point.PutCoords(1,5);
+            polyline.FromPoint = point;
+            point.PutCoords(1000, 5000);
+            polyline.ToPoint = point;
+
+            element = lineElement as IElement;
+            element.Geometry = polyline as IGeometry;
+            // map 转 IGraphicsContainer 后可以使用 AddElement Update* Delete*
+            graphicsContainer = map as IGraphicsContainer;
+            graphicsContainer.AddElement(element,0);
+            axMapControl1.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics,null,null);
         }
     }
 }

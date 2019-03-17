@@ -34,6 +34,7 @@
             this.axToolbarControl1 = new ESRI.ArcGIS.Controls.AxToolbarControl();
             this.axMapControl1 = new ESRI.ArcGIS.Controls.AxMapControl();
             this.button1 = new System.Windows.Forms.Button();
+            this.simpleButton2 = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).BeginInit();
             this.SuspendLayout();
@@ -75,7 +76,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(54, 1);
+            this.button1.Location = new System.Drawing.Point(228, 1);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(55, 24);
             this.button1.TabIndex = 4;
@@ -83,11 +84,21 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // simpleButton2
+            // 
+            this.simpleButton2.Location = new System.Drawing.Point(49, 1);
+            this.simpleButton2.Name = "simpleButton2";
+            this.simpleButton2.Size = new System.Drawing.Size(58, 25);
+            this.simpleButton2.TabIndex = 5;
+            this.simpleButton2.Text = "AddElem";
+            this.simpleButton2.Click += new System.EventHandler(this.simpleButton2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 196);
+            this.Controls.Add(this.simpleButton2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.axToolbarControl1);
@@ -110,6 +121,7 @@
         private ESRI.ArcGIS.Controls.AxToolbarControl axToolbarControl1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button button1;
+        private DevExpress.XtraEditors.SimpleButton simpleButton2;
 
     }
 }
