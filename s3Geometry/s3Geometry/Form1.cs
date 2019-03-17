@@ -371,7 +371,7 @@ namespace s3Geometry
             axMapControl1.Refresh();
         }
         #endregion
-
+        // 设置坐标系
         private void alterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (axMapControl1.LayerCount == 0)
@@ -395,7 +395,7 @@ namespace s3Geometry
 
             }
         }
-
+        // 获取坐标系
         private void getToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (axMapControl1.LayerCount == 0)

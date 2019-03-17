@@ -15,7 +15,7 @@ namespace Test
         int? n = 0;
         public void cb(object a)
         {
-            Console.WriteLine("timer{0}{1}", a, n++);
+            Console.WriteLine("timer a {0}, n {1}", a, n++);
         }
         public static void Main(string[] args)
         {
@@ -38,7 +38,13 @@ namespace Test
             Console.WriteLine("cc{0}{1}", enumerator.Current,dom);
             //for(int i=0;i<100;i++){Console.WriteLine(i);}
             Parallel.For(0, 10, i => { Console.WriteLine(i); });
-            Timer timer = new Timer(p.cb, null, 0, 1000);
+            Timer timer = new Timer(p.cb, 123, 1000, 0);
+            //timer.Dispose();
+            //DateTime date = DateTime.Now;
+            DateTime date = DateTime.Parse("2018-05-15");
+            //DateTime date = DateTime.Today;
+            date = DateTime.FromFileTime(45644646);
+            Console.WriteLine(date.ToString());
             Console.ReadLine();
         }
         public void h()

@@ -363,13 +363,13 @@ namespace s2
             this.textBox1.Visible = true;
             this.label1.Visible = true;
             // 报错
-            //searchByName();
+            searchByName();
         }
         private void searchByName()
         {
             string searchName = this.textBox1.Text.Trim();
-            MessageBox.Show(searchName);
-            if (searchName != null && searchName.Length > 1)
+            //MessageBox.Show(searchName);
+            if (searchName != null && searchName.Length > 0)
             {
                 ILayer layer = axMapControl1.Map.get_Layer(0);
                 IFeatureLayer featureLayer = layer as IFeatureLayer;
@@ -377,8 +377,10 @@ namespace s2
                 IQueryFilter queryFilter = new QueryFilterClass();
                 IFeatureCursor featureCursor;
                 IFeature feature = null;
-                queryFilter.WhereClause = "continent like '%" + searchName + "%'";
+                //queryFilter.WhereClause = "Shape like '%" + searchName + "%'";
+                queryFilter.WhereClause = "FID=0";
                 //queryFilter.WhereClause = string.Format("continent like '%{0}%'", searchName);
+                //MessageBox.Show(layer.Name);
                 try
                 {
                     featureCursor = featureClass.Search(queryFilter, true);
@@ -388,6 +390,7 @@ namespace s2
                         axMapControl1.Map.SelectFeature(axMapControl1.get_Layer(0), feature);
                         axMapControl1.Refresh(esriViewDrawPhase.esriViewGeoSelection, null, null);
                     }
+                    //MessageBox.Show("searchName done");
                 }
                 catch (Exception e)
                 {

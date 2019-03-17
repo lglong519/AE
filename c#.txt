@@ -3,6 +3,28 @@
 	1.C:\Program Files (x86)\Common Files\microsoft shared\VSA\9.0\VsaEnv\vsmsvr10.exe.config
 	2.runtime 标签内添加 <AllowDComReflection enabled="1"/>
 	3.重启 vs 生效
+获取显示器分辨率大小
+	// 屏幕-主屏幕-WorkingArea（不包括工具栏）-包络线-宽
+	System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Size.Width
+设置窗体位置
+	SetDesktopLocation(int x, int y);
+类型转换
+	字符串转数值
+		int.Parse("1")
+		int.Parse("1s") // 报错
+		int.Parse("1.5") // 报错
+		int fid;
+		// 成功返回：true，失败返回：false
+	    int.TryParse(textBox1.Text, out fid);
+类
+	Random 生成随机数
+		Random rand = new Random();
+		// 随机非负整数 [0,15)
+		rand.Next(15);
+		// 随机整数 [-5,10)
+		rand.Next(-5,10);
+		// 随机小数 [0.0,1.0)
+		rand.NextDouble
 19.泛型
 	19.13　泛型的协变和逆变？
 20.枚举数和迭代器
@@ -29,4 +51,39 @@
 	12　产生多个枚举数
 	13　迭代器实质
 21.LINQ
+
+补充
+	字符串方法
+	数组方法
+	[]和 ArrayList
+	日期 DateTime
+		// 当前日期对象
+		DateTime date = DateTime.Now;
+		// 时间字符串
+        DateTime date = DateTime.Parse("2018-05-15");
+		DateTime.TryParse()
+        // 时间戳
+        DateTime date = DateTime.FromFileTime(45644646);
+        // 只有年月日，时间为 0
+		DateTime date = DateTime.Today
+		输出格式
+			
+	Math
+	定时器
+		System.Threading.Timer
+			// state 作为 cb 的参数，null
+			// dueTime 首次执行等待时间
+			// period 等待时间，如果是 0，只执行一次 
+			public Timer(cb, object state, int dueTime, int period);
+	        public Timer(cb, object state, long dueTime, long period);
+	        public Timer(cb, object state, TimeSpan dueTime, TimeSpan period);
+	        public Timer((cb, object state, uint dueTime, uint period);
+	        	Dispose() ： 销毁
+	        	bool Change(int dueTime, int period): 修改
+	类型转换
+	正则方法
+	object
+	外部引用
+	dll
+	addIn
 	

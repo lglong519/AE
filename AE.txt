@@ -43,15 +43,19 @@
 				CustomizeDialog
 				MissingCommand
 3.几何对象和空间坐标
-	Geometry
-	Envelope：包络线
+	1.Geometry
+		interface ISpatialReference : ISpatialReferenceInfo
+		分为两个层次：
+			1.构成要素形状的几何图形：点、线、面
+			2.组成几何图形的构件
+	2.Envelope：包络线
 		接口：IEnvelope
 			属性：XMax，XMin，YMax，YMin，Height，Width
 			方法：Intersect、Union、Expand、offset、CenterAt、 PutCoords
-	Curve
+	3.Curve
 		属性：length、FromPoint、ToPoint、isClose
 		方法：ReverseOrientation
-		segment
+		1.segment
 			接口：ISegment
 				属性：
 				方法：SplitAtDistance、SplitDivideLength
@@ -63,6 +67,24 @@
 				接口：ILine
 					属性：Angle
 					方法：QueryCoords、PutCoords
+		2.Path
+	4.点对象
+	5.线对象
+	6.面对象
+	7.空间坐标系及变换
+		获取/设置
+			IGeoDataset geoDataset = featureClass as IGeoDataset;
+            IGeoDatasetSchemaEdit geoDatasetEdit = geoDataset as IGeoDatasetSchemaEdit;
+            if (geoDatasetEdit.CanAlterSpatialReference == true)
+            {
+                ISpatialReferenceFactory2 spatRefFact = new SpatialReferenceEnvironmentClass();
+                // 4214 beijing1954，4547 2000
+                IGeographicCoordinateSystem geoSys = spatRefFact.CreateGeographicCoordinateSystem(4214);
+                // 设置坐标系
+                geoDatasetEdit.AlterSpatialReference(geoSys);
+            }
+            // 获取，名称 => spatialReference.Name
+			ISpatialReference spatialReference = geoDataset.SpatialReference;
 4.地图组成及图层控制
 	1.地图对象 Map
 		35个接口：
@@ -75,6 +97,159 @@
 				BasicGraphicsLayer
 				ClearSelection
 				SelectByShape
-			2.
+			2.IGraphicsContainer
+				Reset() // zorder => 0
+				IElement Next()
+				AddElement(IElement，int zorder)
+				UpdateElement(IElement)
+				DeleteElement(IElement)
+			3.IActiveView
+				Extent：返回/设置 Map Envelope
+				FullExtent：返回视图范围
+				ScreenDisplay：控制图形绘制工作
+				PartialRefresh(esriViewDrawPhase,object,Envelope)
+					参数1：刷新对象的类型；参数2：刷新的对象
+					// 刷新所有图层
+					ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGeography, null, null);
+					// 刷新指定图层
+					ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGeography, pLayer, null);
+					// 刷新选择的对象
+					ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection, null, null);
+					// 刷新图形元素
+					ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+					// 刷新指定图形元素
+					ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, pElement, null);
+					// 刷新选择的图形元素
+					ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphicSelection, null, null);
+					// 不刷新元素
+					ActiveView.PartialRefresh(esriViewDrawPhase.esriViewNone, null, null);
+			4.IActiveViewEvents
+				事件：AfterDraw、SelectionChanged
+			5.IMapBookmarks
+				管理空间书签对象
+			6.ITableCollection
+				用于添加关系型属性数据
 	2.图层对象 Layer
-	
+		1.ILayer
+			e.g: ILayer layer = axMapControl1.Map.get_Layer(0);
+			Cached：是否显示缓存
+			Draw()：绘制图层
+			MaximumScale：最大比例尺
+			MinimumScale：最小比例尺
+			Name：图层名称
+			ShowTips：鼠标悬浮要素是否显示 Tip
+			TipText：用于确定图层提示显示的区域？
+			SpatialReference：用于设置图层的空间参考
+				FactoryCode：WKID
+				Name：坐标系名称
+			Valid：图层是否有效
+			Visible：图层是否可见
+		2.要素图层
+			1.IFeatureLayer：用于管理要素图层的数据源=>要素类（FeatureClass）
+				DataSourceType:
+				Search(IQueryFilter, IfRecycling):IFeatureCursor
+					1.IQueryFilter => QueryFilterClass
+					2.游标 IFeatureCursor
+						NextFeature() 返回 IFeature
+							IFeature 可以获取要素相关的信息：获取某个属性 feature.get_Value(index)
+			2.IGeoFeatureLayer
+				控制标注之类的地理相关内容
+			3.IGeoDataset
+				用于管理地理要素集
+				实现类：CadFeature、FeatureLayer、GdbRasterCatalogLayer
+					e.g：
+						IFeatureLayer featureLayer=axMapControl1.Map.get_Layer(0) as IFeatureLayer;
+						IGeoDataset geoDataset = featureLayer.FeatureClass as IGeoDataset;
+						// 获取坐标系，名称
+						geoDataset.SpatialReference.Name
+			4.IFeatureSelection
+				实现类：CadFeature、FeatureLayer、GdbRasterCatalogLayer、CoverageAnnotationLayer
+				方法
+					Add(IFeature Feature)：
+					SelectFeatures(IQueryFilter, esriSelectionResultEnum Method, bool justOne)
+					Clear：清空选择集
+				实例属性/方法
+					ISelectionSet selectionSet = featureSelection.SelectionSet;
+						// 没有返回值，游标以参数的形式传递
+						Search(IQueryFilter QueryFilter, bool Recycling, out ICursor Cursor)
+			5.IFeatureLayerDefinition
+				LayerName：新图层名称
+				DefinitionExpression: 筛选要素的条件
+				CreateSelectionLayer()
+			6.ILayerFields
+				要素属性相关信息
+				Field
+				int FindField(string Name)：查询字段的 index
+				int FindFieldByAliasName(string Name)：查询字段
+				IField get_Field(int)：用于获取字段信息：名称、长度、可编辑，（获取要素的属性表 => 4.2.2.1 IFeatureLayer 和 IFeature）
+				FieldCount：字段数目
+			7.IIdentify
+				IArray Identify(IGeometry pGeom): 用于获取图层单个要素
+					e.g:
+						IIdentify identify = axMapControl1.Map.get_Layer(0) as IIdentify;
+						IArray identify.Identify(null); // param {IGeometry} 可以 null
+						// 获取第 0 个元素
+						IIdentifyObj idObj = array.get_Element(0) as IIdentifyObj;
+					IArray 元素数组
+						Count
+						Add(object unk)
+						object get_Element(int index)
+						Insert(int index, object unk)
+						Remove(int index)
+						RemoveAll()
+		3.CAD 文件
+		4.TIN 图层
+		5.GraphicsLayer
+	3.屏幕显示对象 ScreanDisplay
+		IActiveView
+			ScreenDisplay
+			e.g
+				IPolyline polyline = axMapControl1.TrackLine() as IPolyline;
+	            screenDisplay.StartDrawing(screenDisplay.hDC,(short)esriScreenCache.esriNoScreenCache);
+	            screenDisplay.SetSymbol(lineSymbol as ISymbol);
+	            screenDisplay.DrawPolyline(polyline);
+	            screenDisplay.FinishDrawing();
+	4.页面布局对象 PageLayout
+	5.地图排版
+	6.Element
+		IElement 所有图形元素和框架都实现的接口
+			属性：Geometry 
+			e.g
+				(LineElement as IElement).Geometry=point;
+		仅保存在内存的元素，显示地图发生变化就会消失
+		1.图形元素(Graphic Element)
+			1.LineElement 和 MarkerElement
+				e.g
+					IMarkerElement markerElement = new MarkerElementClass();
+	                (markerElement as IElement).Geometry = point;
+	                markerElement.Symbol = markerSymbol;
+			2.TextElement
+				e.g
+					ITextElement textElement = new TextElementClass();
+	                textElement.Text = "textElement";
+	                (textElement as IElement).Geometry = point;
+			3.GroupElement
+				e.g
+					IGroupElement groupElement = new GroupElementClass();
+			4.FillShapeElement
+				IFillShapeElement
+					Symbol:必须是 IFillsymbol
+			5.图片元素对象
+		2.框架元素(Frame Element)
+			1.
+			2.
+	7.MapGrid
+		1.MapGrid
+		2.MapGridBorder
+	8.MapSurround
+		1.图例
+		2.指北针
+		3.比例尺
+		4.比例文本
+	9.Style 对象
+	10.添加、删除图层数据
+		1.矢量数据添加
+		2.栅格数据的添加
+		3.删除图层数据
+	11.图层控制
+		MoveLayer
