@@ -119,20 +119,12 @@ namespace s4Map
             // 1.查询范围 => 选中的元素
             ISelectionEnvironment PSelectionEnv = new SelectionEnvironmentClass();
             // 2.高亮的颜色
-            PSelectionEnv.DefaultColor = getRGB(110,120,210);
+            PSelectionEnv.DefaultColor = Lib.GetRGB(110,120,210);
             pMap.ClearSelection();
             // 
             pMap.SelectByShape(pEnv, PSelectionEnv,false);
             activeView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection,null,null);
             */
-        }
-        private IRgbColor getRGB(int r, int g, int b)
-        {
-            IRgbColor rgb = new RgbColorClass();
-            rgb.Red = r;
-            rgb.Green = g;
-            rgb.Blue = b;
-            return rgb;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -211,7 +203,7 @@ namespace s4Map
             while (feature != null)
             {
                 ISimpleFillSymbol symbol = new SimpleFillSymbolClass();
-                symbol.Color = getRGB(220, 100, 50);
+                symbol.Color = Lib.GetRGB(220, 100, 50);
                 // ?
                 object oFillsyl = symbol;
                 //IPolygon polygon = feature.Shape as IPolygon;
@@ -231,7 +223,7 @@ namespace s4Map
             IFeatureSelection featureSelection = featureLayer as IFeatureSelection;
             // 选择选择集
             featureSelection.SelectFeatures(queryFilter,esriSelectionResultEnum.esriSelectionResultNew,true);
-            featureSelection.SelectionColor = getRGB(90,240,120);
+            featureSelection.SelectionColor = Lib.GetRGB(90,240,120);
 
             axMapControl1.Refresh(esriViewDrawPhase.esriViewGeoSelection,null,null);
 
@@ -243,7 +235,7 @@ namespace s4Map
             while (feature != null)
             {
                 ISimpleFillSymbol symbol = new SimpleFillSymbolClass();
-                symbol.Color = getRGB(220, 100, 50);
+                symbol.Color = Lib.GetRGB(220, 100, 50);
                 //MessageBox.Show(feature.Shape.GeometryType.ToString());
                 axMapControl1.FlashShape(feature.Shape, 2, 80, symbol);
                 feature = featureCursor.NextFeature();
@@ -301,7 +293,6 @@ namespace s4Map
             IActiveView activeView = map as IActiveView;
             IFeatureLayer featureLayer = map.get_Layer(0) as IFeatureLayer;
             IFeature feature= featureLayer.Search(null,true).NextFeature();
-            
             int index = feature.Fields.FindField("num");
             if (index < 0) return;
             MessageBox.Show(feature.get_Value(index).ToString());
@@ -350,7 +341,7 @@ namespace s4Map
                 point.PutCoords(e.mapX, e.mapY);
 
                 ISimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbolClass();
-                markerSymbol.Color = getRGB(11,200,145);
+                markerSymbol.Color = Lib.GetRGB(11,200,145);
                 markerSymbol.Size = 4;
                 markerSymbol.Style = esriSimpleMarkerStyle.esriSMSDiamond;
 
@@ -377,6 +368,24 @@ namespace s4Map
                 IGraphicsContainer graphicsContainer = axMapControl1.Map as IGraphicsContainer;
                 graphicsContainer.AddElement(textElement as IElement, 0);
                 axMapControl1.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            }
+        }
+
+        private void simpleButton9_Click(object sender, EventArgs e)
+        {
+            if (axPageLayoutControl1.Height == axMapControl1.Height)
+            {
+                axPageLayoutControl1.Height = 63;
+                axPageLayoutControl1.Width = 54;
+                axPageLayoutControl1.Left = 228;
+                axPageLayoutControl1.Top = 157;
+            }
+            else
+            {
+                axPageLayoutControl1.Height = axMapControl1.Height;
+                axPageLayoutControl1.Width = axMapControl1.Width;
+                axPageLayoutControl1.Left = axMapControl1.Left;
+                axPageLayoutControl1.Top = axMapControl1.Top;
             }
         }
     }

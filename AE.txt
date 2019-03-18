@@ -1,4 +1,41 @@
-控件
+1.环境
+	类库
+		Carto;
+			IFeatureLayer
+			IGraphicsContainer
+			IMap
+			IFeatureSelection
+			IActiveView
+			IFeatureLayerDefinition
+			IIdentify
+			IElement
+			ILineElement
+			IMarkerElement
+			ITextElement
+			IRasterLayer : ILayer
+		Catalog;
+		CatalogUI;
+		Controls;
+		Display;
+			ISimpleFillSymbol
+			ISimpleMarkerSymbol
+			IScreenDisplay
+			IRgbColor
+		DataSourcesFile;
+		esriSystem;
+			IArray
+		Geodatabase;
+			IQueryFilter
+			IFeatureCursor
+			IFeature
+			ISelectionSet
+			ICursor
+		Geometry;
+			IGeometry
+			IPolyline
+			IPoint
+		GeocodingTools;
+2.控件
 	制图控件
 		MapControl
 			实线的主要接口：
@@ -97,13 +134,14 @@
 				BasicGraphicsLayer
 				ClearSelection
 				SelectByShape
-			2.IGraphicsContainer
+			2.IGraphicsContainer: 用来管理图形元素（增、删、改、选择）
 				Reset() // zorder => 0
 				IElement Next()
 				AddElement(IElement，int zorder)
 				UpdateElement(IElement)
 				DeleteElement(IElement)
 			3.IActiveView
+				实现对象：Map（数据视图）、PageLayout（布局视图）
 				Extent：返回/设置 Map Envelope
 				FullExtent：返回视图范围
 				ScreenDisplay：控制图形绘制工作
@@ -136,7 +174,7 @@
 			Draw()：绘制图层
 			MaximumScale：最大比例尺
 			MinimumScale：最小比例尺
-			Name：图层名称
+			Name：设置/获取图层名称
 			ShowTips：鼠标悬浮要素是否显示 Tip
 			TipText：用于确定图层提示显示的区域？
 			SpatialReference：用于设置图层的空间参考
@@ -229,6 +267,8 @@
 	                textElement.Text = "textElement";
 	                (textElement as IElement).Geometry = point;
 			3.GroupElement
+				AddElement
+				ClearElements
 				e.g
 					IGroupElement groupElement = new GroupElementClass();
 			4.FillShapeElement
@@ -236,20 +276,133 @@
 					Symbol:必须是 IFillsymbol
 			5.图片元素对象
 		2.框架元素(Frame Element)
-			1.
-			2.
+			1.MapFrame 对象
+				供 PageLayout 使用，实现了 IMapFrame，提供了属性和方法对 Map 对象进行控制
+				(axPageLayoutControl1.PageLayout as IMapFrame).
+					IMap Map { get; set; }
+					IEnvelope MapBounds { get; set; }
+					double MapScale { get; set; }
+					IMapSurroundFrame CreateSurroundFrame(UID clsid, IMapSurround optionalStyle);
+			2.MapSurroundFrame 对象
+				用来管理 MapFrame 对象
 	7.MapGrid
 		1.MapGrid
 		2.MapGridBorder
 	8.MapSurround
-		1.图例
-		2.指北针
-		3.比例尺
-		4.比例文本
+		修饰地图的辅助图形元素对象
+		1.图例 Legend
+		2.指北针 MarkerNorthArrow
+		3.比例尺 ScaleBar
+		4.比例文本 ScaleText
 	9.Style 对象
 	10.添加、删除图层数据
+		矢量数据：ArcInfo Coverage、ESRI Shapefile，CAD：DWF、DWG，栅格数据：BMP、CRID
 		1.矢量数据添加
+			用到的对象：Map、Dataset、FeatureLayer、FeatureClass
+			用到的接口：IMap、IActiveView、IDataset、IFeatureLayer、IFeatureClass
+			Map 对象
+				ActiveGraphicsLayer:用于获取 Map 中处于激活状态的图层
+				Layer：用于获取 索引 指定的图层
+				LayerCount：图层数量
+				AddLayer：添加图层
+				ClearSelection：清除所有选中的对象的选中状态
+			Dataset(IDataset) 抽象类，Workspace 中数据的集合，Workspace 可包含多个 Dataset，Dataset 可包含其他 Dataset
+				派生类：GeoDataset、Table、FeatureDataset、RasterDataset
+				{
+					IDataset 的实现：Dataset、Workspace、FeatureLayer
+						Name:数据集的名称
+						Category：数据集的类型
+						Workspace：数据集所在的工作空间
+						CanCopy：用于检测数据集是否可复制
+						CanDelete：用于检测数据集是否可删除
+						CanRename：用于检测数据集是否可重命名
+				}
+			FeatureLayer 实现了 ILayer、IFeatureLayer
+			IFeatureLayer 继承自 ILayer
+				新属性/方法：
+					DataSourceType：获取/设置数据源的类型
+					FeatureClass：用于获取图层的要素类
+					ScaleSymbol：获取/设置要素层的符合是否随比例尺变化而变化
+					Search：根据查询过滤器要要素层中搜索符合条件的要素
+			FeatureClass 要素类是 Feature 的集合,
+					Feature.shape：专门用来存放几何图形
+				CreateFeature：创建新的实体(Feature)
+				DeleteField：删除要素类的字段
 		2.栅格数据的添加
+			IRasterLayer 继承自 ILayer
+				void CreateFromRaster(IRaster Raster): 从内存中已有的 Raster 创建一个图层
+		        void CreateFromDataset(IRasterDataset RasterDataset)：从硬盘中的某个数据集创建一个图层
+		        Raster：获取 IRasterLayer 中的 Raster 对象
+		        int DisplayResolutionFactor { get; set; }：设置栅格数据的分辨率
 		3.删除图层数据
+			将图层对象从内存中删除
+			IMap
+				void DeleteLayer(ILayer Layer):删除图层
+				void ClearLayers():删除全部图层
 	11.图层控制
-		MoveLayer
+		修改图层的叠加顺序，由外到内（0~index）
+		public virtual void MoveLayerTo(int fromIndex, int toIndex)
+		e.g
+			axMapControl1.MoveLayerTo(axMapControl1.LayerCount - 1, 0)
+		Visible：图层是否可见
+5.地图制图
+	1.地图标注
+		1.标注（Label）		
+		2.注记（Annotation）
+	2.符号及符号库
+		1.颜色对象
+			RGB 模型：Red、Green、Blue
+			HSV 模型：Hue、Saturation、Value
+			Grey 模型
+			CMYK 模型
+			1.Color 对象
+				IColor => Color 抽象类，泛化为5个类：CmykColor、GreyColor、HlsColor、HsvColor、RgbColor
+			2.ColorRamp 对象
+				IColorRamp
+		2.Symbol 对象
+			离散实体3种：点、线、面
+			表示符号：MarkSymbol、LineSymbol、FillSymbol
+			文字标注：TextSymbol
+			实现自 ISymbol、IMapLevel
+				MapLevel：用于确定图层的叠加顺序
+			1.MarkerSymbol 对象
+				用于修饰点对象的符号，12个子类：ArrowMarkerSymbol、BarChartSymbol、CharacterMarker3DSymbol、CharacterMarkerSymbol、Marker3DSymbol、MultiLayerMarkerSymbol、PictureMarkerSymbol、PieChartSymbol、SimpleMarker3DSymbol、SimpleMarkerSymbol、StackChartSymbol、TextMarkerSymbol
+				全部 MarkerSymbol 实现自：IMarkerSymbol
+					Angle、Color、Size‘、Xoffset、Yoffset
+				1.SimpleMarkerSymbol：简单类型的点状符号
+				2.ArrowMarkerSymbol：箭头形式的符号
+				3.CharacterMarkerSymbol：字符形式的符号
+				4.PictureMarkerSymbol：图片为背景的符号
+				5.MultiLayerMarkerSymbol：多个符号叠加生成新的符号
+			2.LineSymbol 对象
+				ILineSymbol
+					Color
+					Width
+				ISimpleLineSymbol:ILineSymbol
+					SimpleLineSymbol
+						Style:用于设置线的样式
+			3.FillSymbol 对象
+				修饰具有面积的几何形体的符号对象
+				IFillSymbol
+					Color：填充符号的基本类型
+					OutLine：外边框
+				1.SimpleFillSymbol：简单填充符号
+				2.LineFillSymbol：线填充符号
+				3.MarkerFillSymbol：点填充符号
+				4.GradientFillSymbol：渐变颜色
+				5.PictureFillSymbol：图片填充符号
+				6.MultilayerFillSymbol：多层填充符号
+				7.DotDensityFillSymbol：点密度填充符号
+			4.TextSymbol 对象
+			5.3DChartSymbol 对象
+				子类：BarChart、PieChart、StackedChart
+	3.专题图制作
+6.空间数据管理
+	空间数据库及组织
+		1.混合型空间数据库
+			非空间数据存储在关系型数据库中，空间数据存放在系统文件中
+		2.集成型空间数据库
+			所有的数据都存储于一个数据库中
+			1.全关系型 RDB
+			2.面向对象 OODB
+			3.对象-关系模型数据库 ORDB

@@ -48,8 +48,12 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.simpleButton9 = new DevExpress.XtraEditors.SimpleButton();
+            this.axPageLayoutControl1 = new ESRI.ArcGIS.Controls.AxPageLayoutControl();
+            this.axToolbarControl2 = new ESRI.ArcGIS.Controls.AxToolbarControl();
             ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axPageLayoutControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl2)).BeginInit();
             this.SuspendLayout();
             // 
             // simpleButton1
@@ -219,14 +223,32 @@
             this.simpleButton9.Name = "simpleButton9";
             this.simpleButton9.Size = new System.Drawing.Size(25, 25);
             this.simpleButton9.TabIndex = 18;
-            this.simpleButton9.Text = "jpg";
+            this.simpleButton9.Text = "EX";
             this.simpleButton9.Click += new System.EventHandler(this.simpleButton9_Click);
+            // 
+            // axPageLayoutControl1
+            // 
+            this.axPageLayoutControl1.Location = new System.Drawing.Point(228, 157);
+            this.axPageLayoutControl1.Name = "axPageLayoutControl1";
+            this.axPageLayoutControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axPageLayoutControl1.OcxState")));
+            this.axPageLayoutControl1.Size = new System.Drawing.Size(54, 63);
+            this.axPageLayoutControl1.TabIndex = 19;
+            // 
+            // axToolbarControl2
+            // 
+            this.axToolbarControl2.Location = new System.Drawing.Point(126, 53);
+            this.axToolbarControl2.Name = "axToolbarControl2";
+            this.axToolbarControl2.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axToolbarControl2.OcxState")));
+            this.axToolbarControl2.Size = new System.Drawing.Size(30, 28);
+            this.axToolbarControl2.TabIndex = 20;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 222);
+            this.Controls.Add(this.axToolbarControl2);
+            this.Controls.Add(this.axPageLayoutControl1);
             this.Controls.Add(this.simpleButton9);
             this.Controls.Add(this.checkBox3);
             this.Controls.Add(this.checkBox2);
@@ -252,6 +274,8 @@
             this.Text = "S4";
             ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axPageLayoutControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -278,6 +302,8 @@
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.CheckBox checkBox3;
         private DevExpress.XtraEditors.SimpleButton simpleButton9;
+        private ESRI.ArcGIS.Controls.AxPageLayoutControl axPageLayoutControl1;
+        private ESRI.ArcGIS.Controls.AxToolbarControl axToolbarControl2;
 
     }
 }
