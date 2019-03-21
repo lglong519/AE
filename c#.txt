@@ -29,16 +29,77 @@
 		9.自动实现属性
 			1.没有后备字段
 			2.访问器的方法体为空
+	对象初始化列表
+		MyClass instance = new MyClass(){age=10,name="Lily"}
+	析构函数
+		实例不再使用之后某个时间点执行
+			函数前带波浪线
+			一个类只有一个
+			没参数、修饰符
+				class MyClass{
+					~func(){}
+				}
+	readonly和const区别：const 必须初始化
+	17.索引
+		可以重载
+		class MyClass{
+			int a=11;
+			int b=22;
+			int c=33;
+			public num(int i)
+			{
+				get
+				{
+					switch(i)
+					{
+						case 0;return a;
+						case 1:return b;
+						case 2:return c;
+					}
+				}
+				set
+				{
+					switch(i)
+					{
+						case 0;a=value;return;
+						case 1:b=value;return;
+						case 2:c=value;return;
+					}
+				}
+			}
+		}
+	19.分部类和分部方法
+		partial
 7.类和继承
 	4.屏蔽基类的成员
-		1.声明相同的名称的成员，类型叶相同
+		1.声明相同的名称的成员，类型也相同
 		2.函数成员签名相同，返回类型可以不同
 		3.使用 new 修饰符 可以去除编译警告
 		4.可以屏蔽静态成员
 	5.基类访问
 		访问被隐藏的基类成员：关键字 base.+成员名称
 	6.使用基类的引用
-		
+		基类：virtual
+		派生类：override
+		虚方法可以使基类的引用访问转至派生类内
+	7.构造函数的执行
+		class Driver
+		{
+			// 构造函数实际执行：public son():base()
+			public son():this("param")
+			{}
+			public son(string param)
+			{}
+		}
+		new Driver();
+		构造函数执行顺序：父类->子类带参数->子类无参数；由外往内
+	8.类的访问修饰符
+		不同命名空间下的类的可访问性
+		public：不同命名空间可直接访问
+		internal：默认
+			1.使用 using 引用命名空间
+			1.直接使用命名空间：myNamespace.MyClass
+	9.成员的访问修饰符
 19.泛型
 	19.13　泛型的协变和逆变？
 20.枚举数和迭代器

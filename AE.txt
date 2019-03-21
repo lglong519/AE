@@ -13,6 +13,7 @@
 			IMarkerElement
 			ITextElement
 			IRasterLayer : ILayer
+				RasterLayerClass
 		Catalog;
 		CatalogUI;
 		Controls;
@@ -22,19 +23,29 @@
 			IScreenDisplay
 			IRgbColor
 		DataSourcesFile;
-		esriSystem;
+		(System)esriSystem;
 			IArray
+			IAoInitialize
 		Geodatabase;
 			IQueryFilter
 			IFeatureCursor
 			IFeature
 			ISelectionSet
 			ICursor
+			IWorkspaceEdit
+			IWorkspaceFactory
 		Geometry;
 			IGeometry
 			IPolyline
 			IPoint
 		GeocodingTools;
+		DataSourcesGDB
+			SdeWorkspaceFactory
+		DataSourcesRaster
+			RasterWorkspaceFactoryClass
+		(Version)
+			RuntimeManager
+			ProductCode
 2.控件
 	制图控件
 		MapControl
@@ -296,7 +307,8 @@
 		4.比例文本 ScaleText
 	9.Style 对象
 	10.添加、删除图层数据
-		矢量数据：ArcInfo Coverage、ESRI Shapefile，CAD：DWF、DWG，栅格数据：BMP、CRID
+		矢量数据：ArcInfo Coverage、ESRI Shapefile，CAD：DWF、DWG
+		栅格数据：BMP、CRID、TIFF、JPEG、ERDAS IMAGE
 		1.矢量数据添加
 			用到的对象：Map、Dataset、FeatureLayer、FeatureClass
 			用到的接口：IMap、IActiveView、IDataset、IFeatureLayer、IFeatureClass
@@ -398,7 +410,8 @@
 				子类：BarChart、PieChart、StackedChart
 	3.专题图制作
 6.空间数据管理
-	空间数据库及组织
+	1.SDE
+	2.空间数据库及组织
 		1.混合型空间数据库
 			非空间数据存储在关系型数据库中，空间数据存放在系统文件中
 		2.集成型空间数据库
@@ -406,3 +419,124 @@
 			1.全关系型 RDB
 			2.面向对象 OODB
 			3.对象-关系模型数据库 ORDB
+	3.空间数据模型
+	4.Geodatabase 体系系统
+		1.对象类(Object Class)：非空间实体，没有存储空间信息
+		2.要素类(Feature Class)：具有相同几何形状的空间实体：点状要素类、线状要素类、面状要素类
+		3.要素数据集(Feature Datasets)：由一组相同空间参考(spatial reference)的要素类组成
+		4.栅格数据集(Raster Datasets)
+		5.TIN数据集(Tin Datasets)：由一系列不规则的三角形构成
+		6.关系类(Relationship Class)
+		7.属性域(Domain):定义属性的有效取值范围
+		8.几何网络(Geometric Network)
+	5.Geodatabase 对象模型
+		主要类：
+			1.工作区域部分
+			2.数据集部分
+				1.WorkspaceFactory 类
+					用于连接 SDE
+					PropertySet
+				2.Workspace 类
+					存放空间和非空间数据，FeatureDatasets、RasterDatasets、Tables
+				3.FeatureDataset 组件类
+					IFeatureDataset
+						CreateFeatureClass
+	6.Geodatabase 使用与开发
+7.数据编辑
+	3.要素编辑
+		1.开始编辑
+			IWorkspaceEdit：启动或停止一个编辑流程
+				StartEditing(bool withUndoRedo)：withUndoRedo 是否开启撤销
+					StartEditOperation：开始编辑操作(一个更改动作)
+		2.结束编辑
+			StopEditOperation()：用来确保编辑操作的完成
+			UndoEditOperation():用于处于编辑状态的回滚操作
+			StopEditing()：完成编辑，所有操作不能再回滚
+			工作流程：
+				// 1.启动一个工作空间工厂
+	            	IWorkspaceFactory workspaceFactory = new AccessWorkspaceFactoryClass();
+	            // 2.用工作空间工厂打开数据库、SDE数据库、SHP文件的路径
+	            // 返回的是工作空间(IWorkspace)的继承接口(IFeatureWorkspace)的实例，也继承了 IWorkspaceEdit
+	            	IFeatureWorkspace featureWorkspace = workspaceFactory.OpenFromFile(@"C:\xxx\test.mdb", 0) as IFeatureWorkspace;
+	            // 3.用返回的工作空间打开指定 名称 的 SHP 文件、图层
+	            	IFeatureClass featureClass = featureWorkspace.OpenFeatureClass("line");
+	            	IWorkspaceEdit workspaceEdit = featureWorkspace as IWorkspaceEdit;
+	            // 4.开启编辑
+	            	workspaceEdit.StartEditing(true);
+	            // 编辑动作
+	            	workspaceEdit.StartEditOperation();
+                // 5.根据 ID 获取要素，并删除
+                	IFeature feature = featureClass.GetFeature(1);
+                	feature.Delete();
+	            // 6.完成编辑
+	            	workspaceEdit.StopEditOperation();
+                // 7.结束编辑，保存编辑结果
+                	workspaceEdit.StopEditing(true);
+                // 8.结束编辑，不保存编辑结果
+                	workspaceEdit.StopEditing(false);
+		3.图形编辑
+			用到的接口：IFeature、IFeatureEdit、IWorkspaceEdit、IFeatureClass、IFeatureCursor
+8.栅格数据
+	2.访问和创建栅格数据
+		Copy：复制一个工作空间中所有的栅格数据到另一工作空间
+		OpenRasterDataset：打开一个栅格数据集
+		CreateRasterDataset：用于产生一个新的基于文件的栅格数据集对象
+		e.g
+			IWorkspaceFactory workspaceFactory=new RasterWorkspaceFactoryClass();
+            string path = @"C:\xxx\test";
+            IRasterWorkspace2 rasterWorkspace = workspaceFactory.OpenFromFile(path, 0) as IRasterWorkspace2;
+            string file = @"\test.bmp";
+            IRasterDataset rasterDataset = rasterWorkspace.OpenRasterDataset(file);
+            IRasterLayer rasterLayer = new RasterLayerClass();
+            rasterLayer.CreateFromDataset(rasterDataset);
+            axMapControl1.Map.AddLayer(rasterLayer as ILayer);
+            axMapControl1.Extent = axMapControl1.FullExtent;
+    4.栅格数据转换
+    	GeoAnalyst 类库 IConversionOp 接口，提供5个转换方法
+    	1.栅格数据转矢量数据：RasterDataToLineFeatureData、RasterDataToPointFeatureData、RasterDataToPolygonFeatureData、ToFeatureData
+    		用于提取矢量要素的栅格对象：Raster、RasterDataset、RasterBand、RasterDescriptor
+    		用于栅格化的矢量要素有 FeatureClass、FeatureClassDescriptor、FeatureLayer
+    		接口实现类：RasterConversionOpClass
+    	2.矢量数据转栅格数据：ToRasterDataset
+    		rasterFormat:
+    			GRID
+            	IMAGINE Image
+            	TIFF
+10.空间分析
+	2.空间查询
+		游标3种：查询游标（Search）、插入游标（Insert）、更新游标（Update），查询和更新都需要过滤器对象（IQueryFilter）
+		ICursor 接口：定义了一个 ROW 集合或 row 对象的属性和方法
+		1.基于属性查询
+			查询语句：
+				LIKE 模糊查询
+				IN 匹配多个内容：“name in('name1','name2','name3')”
+			QueryFilter：查询过滤器
+				IQueryFilter
+					AddField(string subField)：向输出字段集中增加一个字段
+					SubFields：获取/设置 字段名称清单
+					WhereClause：获取/设置 查询过滤条件
+						1.区分大小写
+						2.不支持 OrderBy，使用 ITableSort
+							ITableSort
+								Fields：用于排序的字段列表
+								Table
+								Sort
+								Ascending：用于确定升序字段
+								CaseSensitive：大小写
+		2.基于空间位置查询
+		3.要素选择集
+	3.空间几何图形的集合运算
+	4.空间拓扑运算
+	5.空间关系运算
+		1.IRelationalOperator 接口
+		2.IProximityOperator 接口
+	6.网络及网络分析
+其他
+	许可
+		ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.EngineOrDesktop);
+        ESRI.ArcGIS.RuntimeManager.BindLicense(ESRI.ArcGIS.ProductCode.Engine);
+        // SDE
+        IAoInitialize ao = new AoInitializeClass();
+        ao.Initialize(esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB);
+    pos
+        SetDesktopLocation(System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Size.Width/2, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Size.Height - 300);

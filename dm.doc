@@ -1,0 +1,8 @@
+s1
+	mxd:加载
+s4
+	Add：加载 shp
+	AddElem:IGraphicsContainer 增加元素
+	UpdateElem：无
+	Search：闪烁查询的要素
+	SearchSelection:闪烁查询的要素

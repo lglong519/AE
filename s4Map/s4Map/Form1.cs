@@ -149,9 +149,10 @@ namespace s4Map
             IElement element;
             IPolyline polyline = new PolylineClass();
             IPoint point = new PointClass();
-            point.PutCoords(1, 5);
+            Random rand = new Random();
+            point.PutCoords(rand.Next(1, 5000000), 5);
             polyline.FromPoint = point;
-            point.PutCoords(1000, 5000);
+            point.PutCoords(rand.Next(1000000, 5000000), 5000000);
             polyline.ToPoint = point;
 
             element = lineElement as IElement;

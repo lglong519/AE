@@ -70,12 +70,16 @@ namespace Test
         }
         int IIfc.Innt(int num)
         {
-            int a = 2;
+            int a = 2+s;
             return ++a + num;
         }
         public static implicit operator string(S s)
         {
             return Convert.ToString(s.n);
         }
+    }
+    partial class S
+    {
+        int s = 1;
     }
 }

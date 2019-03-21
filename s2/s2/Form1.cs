@@ -470,5 +470,10 @@ namespace s2
 
         }
 
+        private void 点选查询ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }
