@@ -17,6 +17,7 @@
 		Catalog;
 		CatalogUI;
 		Controls;
+			IMapControlEvents2_OnAfterDrawEvent
 		Display;
 			ISimpleFillSymbol
 			ISimpleMarkerSymbol
@@ -518,15 +519,90 @@
 						1.区分大小写
 						2.不支持 OrderBy，使用 ITableSort
 							ITableSort
-								Fields：用于排序的字段列表
-								Table
-								Sort
+								Fields：[必]用于排序的字段列表
+								Table:[必]
+								Sort():查询并排序
 								Ascending：用于确定升序字段
 								CaseSensitive：大小写
+								set_CaseSensitive(string Field, bool A_2)：设置字段大小写是否忽略
+								ICursor Rows { get; }
+			e.g
+				方法一、
+					#region IFeatureCursor
+		            IFeatureCursor featureCursor;
+		            IFeature feature = null;
+		            try
+		            {
+		                featureCursor = featureClass.Search(queryFilter, true);
+		                feature = featureCursor.NextFeature();
+		                while (feature != null)
+		                {
+		                    axMapControl1.Map.SelectFeature(featureLayer, feature);
+		                    feature = featureCursor.NextFeature();
+		                }
+		            }
+		            catch (Exception){}
+		            #endregion
+				方法二、
+		            #region ITableSort
+		            ITableSort tableSort = new TableSortClass();
+		            tableSort.Fields = comboBox2.SelectedItem.ToString();
+		            tableSort.Table = featureClass as ITable;
+		            tableSort.QueryFilter = queryFilter;
+		            tableSort.set_CaseSensitive(comboBox2.SelectedItem.ToString(), false);
+		            tableSort.Sort(null);
+		            ICursor cursor = tableSort.Rows;
+		            IRow row = cursor.NextRow();
+		            while (row != null)
+		            {
+		                axMapControl1.Map.SelectFeature(featureLayer, row as IFeature);
+		                row = cursor.NextRow();
+		            }
+		            #endregion
 		2.基于空间位置查询
-		3.要素选择集
+			根据要素与要素之间的空间关系进行查询：
+				相交（Intersect）、相接（Touch）、叠加（Overlap）、穿越（Crosses）、在内部（Within）、包含（Contains）
+			SpatialFilter 组件类，QueryFilter 的子类
+			ISpatialFilter 接口：QueryFilter 实现
+				1方法+10属性：
+					Geometry：[必]获取/设置 查询的几何图形，用此几何图形来限制空间位置（查询的范围）
+					GeometryField：[必]获取/设置 被查询字段
+					SpatialRef：[必]获取/设置 查询时的空间关系：
+						esriSpatialRelEnum 
+							esriSpatialRelUndefined：未定义
+							esriSpatialRelIntersects：相交
+							esriSpatialRelEnvelopeIntersects：包络线相交
+							esriSpatialRelIndexIntersects：索引相交
+							esriSpatialRelTouches：相接，边界处相接
+							esriSpatialRelOverlaps：叠加，同维度，如：同是多边形
+							esriSpatialRelCrosses：相交：线与线相交于一点，线与面相交于一条线
+							esriSpatialRelWithin：A在B内部
+							esriSpatialRelContains：A被B包含
+							esriSpatialRelRelation：Query geometry IBE(Interior-Boundary-Exterior) relationship with target geometry.
+					SearchOrder：获取/设置 查询顺序
+					AddField(string subField)：向输出字段集中增加一个字段
+		3.要素选择集 SelectionSet
+			ISelectionSet
 	3.空间几何图形的集合运算
+		集合运算
+			点与多边形集合运算：多边形对点的包含关系分析
+			线与多边形集合运算：比较线上坐标与多边形坐标的关系，判断线是否落入多边形内的分析
+			多边形与多边形集合运算：将两个或者多个多边形进行叠加产生一个新多边形的操作
+		集合运算操作
+			叠置求交 Interset
+			叠置求和 Union
 	4.空间拓扑运算
+		ITopologicalOperator 接口
+			Boundary：获取几何图形的边界
+			Buffer：用于集合对象缓冲区拓扑操作
+			Clip：用于对几何对象进行裁剪空间拓扑操作
+			ConstructUnion：将多个枚举对象与单个几何对象合并为单个几何对象
+			ConvexHull：用于构建几何对象的凸多边形，即包含几何对象的最小外多边形
+			Cut：切割几何对象,左右切割
+			Intersection：交集部分
+			Simplify：使拓扑一致
+			SymmetricDifference：对称差分，合并后再减去交集部分
+			Union：合并对象
 	5.空间关系运算
 		1.IRelationalOperator 接口
 		2.IProximityOperator 接口
