@@ -97,6 +97,24 @@
 		protected
 		internal
 		internal protected
+	11.抽象类 abstract
+	12.密封类 sealed
+		不能被继承
+	13.静态类 static
+		不能被继承
+		所有成员（字段、方法和构造函数）都是静态的
+		不能实例化
+	14.扩展方法
+		必须是静态的
+		所在的类也是静态的
+		第一个参数必须是： this+类名+x
+		e.g
+			class Calc{}
+			static class Extend
+			{
+				public static void exFunc(this Calc c){}
+			}
+	x外部方法
 19.泛型
 	19.13　泛型的协变和逆变？
 20.枚举数和迭代器

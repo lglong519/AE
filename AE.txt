@@ -394,12 +394,43 @@
 				ISimpleLineSymbol:ILineSymbol
 					SimpleLineSymbol
 						Style:用于设置线的样式
+							enum esriSimpleLineStyle:
+						        esriSLSSolid = 0,
+						        esriSLSDash = 1,
+						        esriSLSDot = 2,
+						        esriSLSDashDot = 3,
+						        esriSLSDashDotDot = 4,
+						        esriSLSNull = 5,
+						        esriSLSInsideFrame = 6,
+			        e.g
+			        	ISimpleLineSymbol simpleLineSymbol = new SimpleLineSymbolClass();
+			            simpleLineSymbol.Color = GetRGB(255, 0, 0);
+			            simpleLineSymbol.Width = 2;
+			            simpleLineSymbol.Style = esriSimpleLineStyle.esriSLSDashDotDot;
+			            ISymbol symbol=simpleLineSymbol as ISymbol;
+			            symbol.ROP2 = esriRasterOpCode.esriROPNotXOrPen;
+        
 			3.FillSymbol 对象
 				修饰具有面积的几何形体的符号对象
 				IFillSymbol
 					Color：填充符号的基本类型
 					OutLine：外边框
 				1.SimpleFillSymbol：简单填充符号
+					ISimpleFillSymbol
+						Color
+						Style:
+						    public enum esriSimpleFillStyle
+						    {
+						        esriSFSSolid = 0,
+						        esriSFSNull = 1,
+						        esriSFSHollow = 1,
+						        esriSFSHorizontal = 2,
+						        esriSFSVertical = 3,
+						        esriSFSForwardDiagonal = 4,
+						        esriSFSBackwardDiagonal = 5,
+						        esriSFSCross = 6,
+						        esriSFSDiagonalCross = 7,
+					        }
 				2.LineFillSymbol：线填充符号
 				3.MarkerFillSymbol：点填充符号
 				4.GradientFillSymbol：渐变颜色
@@ -592,20 +623,86 @@
 			叠置求交 Interset
 			叠置求和 Union
 	4.空间拓扑运算
-		ITopologicalOperator 接口
+		ITopologicalOperator 接口:实现类：Point、Multipoint、Polyline、Polygon、Multipatch
 			Boundary：获取几何图形的边界
+				IGeometry Boundary { get; }
 			Buffer：用于集合对象缓冲区拓扑操作
+				IGeometry Buffer(double distance);
+				/*
+		         * 1.获取要素作为拓扑对象
+		         * 2.设置缓冲区距离 ConvertPixelsToMapUnits
+		         * 3.获取缓冲区 Buffer
+		         * 4.使用缓冲区做空间位置查询
+		         * 5.高亮查询结果
+		         */
 			Clip：用于对几何对象进行裁剪空间拓扑操作
+				void QueryClipped(IEnvelope clipperEnvelope, IGeometry clippedGeometry);
+				/*
+		         * 1.获取要素作为拓扑对象
+		         * 2.获取包络线的大小的1/3作为裁剪的范围
+		         * 3.新建几何图形作为裁剪结果的容器
+		         * 4.裁剪 QueryClipped
+		         * 5.图形显示裁剪结果
+		         */
 			ConstructUnion：将多个枚举对象与单个几何对象合并为单个几何对象
+				void ConstructUnion(IEnumGeometry geometries);
+				/*
+		         * 1.新建几何对象要素集 GeometryBagClass g
+		         * 2.g 收集图层一个或多个要素几何对象 Shape
+		         * 3.新建一个多边形类作为拓扑对象 p
+		         * 4.拓扑.合并几何对象集 ConstructUnion
+		         * 5.填充图形显示合并结果 p
+		         */
 			ConvexHull：用于构建几何对象的凸多边形，即包含几何对象的最小外多边形
+				IGeometry ConvexHull();
+				/*
+		         * 1.获取图层某个要素几何图形作为拓扑对象
+		         * 2.获取凸多边形 ConvexHull
+		         * 3.线图形显示
+		         */
 			Cut：切割几何对象,左右切割
+				void Cut(IPolyline cutter, out IGeometry leftGeom, out IGeometry rightGeom);
+				/*
+		         * 1.获取图层某个要素几何图形作为拓扑对象
+		         * 2.获取包络线取左下角+右上角，画对角线
+		         * 3.新建左右几何对象 IGeometry，用来接收切割后的图形
+		         * 4.使用对角线切割图形 Cut
+		         * 5.填充图形显示切割结果
+		         */
+	        Difference：相减 A-B
+	        	IGeometry Difference(IGeometry other);
+	        	/*
+		         * 1.获取要素A、B
+		         * 2.C=A-B Difference
+		         * 3.填充显示
+		         */
 			Intersection：交集部分
+				IGeometry Intersect(IGeometry other, esriGeometryDimension resultDimension);
+				/*
+		         * 1.获取要素A、B
+		         * 2.C=A交B Intersect
+		         * 3.填充显示
+		         */
 			Simplify：使拓扑一致
+				void Simplify();
 			SymmetricDifference：对称差分，合并后再减去交集部分
+				IGeometry SymmetricDifference(IGeometry other);
 			Union：合并对象
+				IGeometry Union(IGeometry other);
 	5.空间关系运算
 		1.IRelationalOperator 接口
+			用来获取几何对象之间的空间关系：
+				Contain：A是否包含B
+				Cross：相交
+				Equal：相等
+				Touch：是否连接
+				Disjoin：是否不相交
+				Overlap：是否有重叠
+				Relation：Relationship
+				Within：A是否被B包含
 		2.IProximityOperator 接口
+			1.用于获取两个图形的距离
+			2.提供一个点，获取另一个图形上距离定点最近的点
 	6.网络及网络分析
 其他
 	许可
