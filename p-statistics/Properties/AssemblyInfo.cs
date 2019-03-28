@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("s10Analyst")]
+[assembly: AssemblyTitle("p-statistics")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HYZN")]
-[assembly: AssemblyProduct("s10Analyst")]
-[assembly: AssemblyCopyright("Copyright © LGLONG519")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("p-statistics")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("ee38a3a4-1a88-4659-a825-30adf295f9e4")]
+[assembly: Guid("394e1e8a-b5b3-4e0c-8d32-7f055a20f2c2")]
 
 // 程序集的版本信息由下面四个值组成:
 //

@@ -693,8 +693,8 @@
 		1.IRelationalOperator 接口
 			用来获取几何对象之间的空间关系：
 				Contain：A是否包含B
-				Cross：相交
-				Equal：相等
+				Cross：面与线是否相交
+				Equal：相等，两个重叠的任意图形
 				Touch：是否连接
 				Disjoin：是否不相交
 				Overlap：是否有重叠
@@ -713,3 +713,65 @@
         ao.Initialize(esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB);
     pos
         SetDesktopLocation(System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Size.Width/2, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Size.Height - 300);
+	获取要素面积（平方米）
+		IGeometry geometry = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+        IArea area = geometry as IArea;
+        MessageBox.Show("dimension: "+area.Area);
+    获取选中要素
+	    if (axMapControl1.Map.SelectionCount<1) return null;
+    	ISelection selection= axMapControl1.Map.FeatureSelection;
+        IEnumFeatureSetup enumFeatureSetup = selection as IEnumFeatureSetup;
+        enumFeatureSetup.AllFields = true;
+        IEnumFeature enumFeature = enumFeatureSetup as IEnumFeature;
+        enumFeature.Reset();
+        IFeature feature = enumFeature.Next(); // 可能 null
+	图形类型
+		namespace ESRI.ArcGIS.Geometry
+		{
+		    public enum esriGeometryType
+		    {
+		        // A geometry of unknown type.未知类型
+		        esriGeometryNull = 0,
+		        // A single zero dimensional geometry.单点
+		        esriGeometryPoint = 1,
+		        // An ordered collection of points.多点
+		        esriGeometryMultipoint = 2,
+		        // An ordered collection of paths.多段线
+		        esriGeometryPolyline = 3,
+		        // A collection of rings ordered by their containment relationship.多边形
+		        esriGeometryPolygon = 4,
+		        // A rectangle indicating the spatial extent of another geometry.包络线
+		        esriGeometryEnvelope = 5,
+		        // A connected sequence of segments.
+		        esriGeometryPath = 6,
+		        // Any of the geometry coclass types.
+		        esriGeometryAny = 7,
+		        // A collection of surface patches.
+		        esriGeometryMultiPatch = 9,
+		        // An area bounded by one closed path.
+		        esriGeometryRing = 11,
+		        // A straight line segment between two points.
+		        esriGeometryLine = 13,
+		        // A portion of the boundary of a circle.
+		        esriGeometryCircularArc = 14,
+		        // A third degree bezier curve (four control points).
+		        esriGeometryBezier3Curve = 15,
+		        // A portion of the boundary of an ellipse.
+		        esriGeometryEllipticArc = 16,
+		        // A collection of geometries of arbitrary type.
+		        esriGeometryBag = 17,
+		        // A surface patch of triangles defined by three consecutive points.
+		        esriGeometryTriangleStrip = 18,
+		        // A surface patch of triangles defined by the first point and two consecutive
+		        // points.
+		        esriGeometryTriangleFan = 19,
+		        // An infinite, one-directional line extending from an origin point.
+		        esriGeometryRay = 20,
+		        // A complete 3 dimensional sphere.
+		        esriGeometrySphere = 21,
+		        // A surface patch of triangles defined by non-overlapping sets of three consecutive
+		        // points each.
+		        esriGeometryTriangles = 22,
+		    }
+		}
+    

@@ -485,6 +485,160 @@ namespace s10Analyst
             screenDisplay.DrawPolygon(intersection);
             screenDisplay.FinishDrawing();
         }
+        #region 10.5 空间关系
+        // 1.Contains
+        private void button14_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            IGeometry geometry1 = featureLayer.FeatureClass.GetFeature(1).Shape as IGeometry;
+
+            IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
+            bool isContain = relationalOperator.Contains(geometry1);
+            this.Text = isContain ? "A Contains B" : "A not Contains B";
+
+            drawAB(geometry0, geometry1);
+        }
+        // 2.Crosses : polygon Crosses polyline
+        private void button15_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            if (geometry0.GeometryType != esriGeometryType.esriGeometryPolygon)
+            {
+                MessageBox.Show("invalid type: " + geometry0.GeometryType.ToString());
+                return;
+            }
+            IFeatureLayer lineLayer = axMapControl1.Map.get_Layer(2) as IFeatureLayer;
+            IGeometry geometry1 = lineLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+
+            IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
+            bool isCross=relationalOperator.Crosses(geometry1);
+
+            drawAB(geometry0);
+            if (isCross)
+            {
+                MessageBox.Show("A Crosses B");
+            }
+            else
+            {
+                MessageBox.Show("A dosn't Crosses B");
+            }
+        }
+        // 3.Equals
+        private void button16_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            IGeometry geometry1 = featureLayer.FeatureClass.GetFeature(1).Shape as IGeometry;
+
+            IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
+            bool isEqual=relationalOperator.Equals(geometry1);
+            MessageBox.Show(isEqual ? "A Equals B" : "A dosn't Equals B");
+        }
+        // 4.Touch
+        private void button17_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            IGeometry geometry1 = featureLayer.FeatureClass.GetFeature(1).Shape as IGeometry;
+
+            IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
+            bool isTouches = relationalOperator.Touches(geometry1);
+            MessageBox.Show(isTouches ? "A Touches B" : "A dosn't Touch B");
+        }
+        // 5.Disjoin
+        private void button18_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            IGeometry geometry1 = featureLayer.FeatureClass.GetFeature(1).Shape as IGeometry;
+
+            IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
+            bool disjoint = relationalOperator.Disjoint(geometry1);
+            MessageBox.Show(disjoint ? "A Disjoint B" : "A joint B");
+        }
+        // 6.Overlap
+        private void button19_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            IGeometry geometry1 = featureLayer.FeatureClass.GetFeature(1).Shape as IGeometry;
+
+            IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
+            bool isOverlaps = relationalOperator.Overlaps(geometry1);
+            MessageBox.Show(isOverlaps ? "A Overlaps B" : "A dosn't Overlap B");
+        }
+        // 8.Within  A in B
+        private void button21_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            IGeometry geometry1 = featureLayer.FeatureClass.GetFeature(1).Shape as IGeometry;
+
+            IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
+            bool isWithin = relationalOperator.Within(geometry1);
+            MessageBox.Show(isWithin ? "A Within B" : "A dosn't Within B");
+        }
+        // 7.B in A
+        private void button20_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
+            IFeature feature=getSelected();
+            if (feature==null)
+            {
+                MessageBox.Show("empty selection");
+                return;
+            }
+            IGeometry geometry1 = feature.Shape as IGeometry; ;
+
+            IRelationalOperator relationalOperator = geometry1 as IRelationalOperator;
+            bool isWithin = relationalOperator.Within(geometry0);
+            MessageBox.Show(isWithin ? "B in A" : "B not in A");
+        }
+        #endregion
+
+        // 获取选中要素
+        private IFeature getSelected()
+        {
+            if (axMapControl1.Map.SelectionCount<1)
+            {
+                return null;
+            }
+            ISelection selection= axMapControl1.Map.FeatureSelection;
+            IEnumFeatureSetup enumFeatureSetup = selection as IEnumFeatureSetup;
+            enumFeatureSetup.AllFields = true;
+            IEnumFeature enumFeature = enumFeatureSetup as IEnumFeature;
+            enumFeature.Reset();
+            return enumFeature.Next();
+        }
+        private void drawAB(IGeometry a,IGeometry b=null)
+        {
+            ISymbol symbol = GetSimpleFillSymbol(200, 200);
+            ISymbol symbo2 = GetSimpleFillSymbol(100, 255);
+            IScreenDisplay screenDisplay = axMapControl1.ActiveView.ScreenDisplay;
+            screenDisplay.StartDrawing(screenDisplay.hDC, (short)esriScreenCache.esriNoScreenCache);
+
+            screenDisplay.SetSymbol(symbol);
+            screenDisplay.DrawPolygon(a);
+
+            if (b!=null)
+            {
+                screenDisplay.SetSymbol(symbo2);
+                screenDisplay.DrawPolygon(b);
+            }
+
+            screenDisplay.FinishDrawing();
+        }
         private IFeatureCursor getFeatureCursor()
         {
             IFeatureLayer featureLayer = axMapControl1.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;

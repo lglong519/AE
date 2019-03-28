@@ -1,0 +1,29 @@
+ArcGIS Code Migration analyzer run on 2019/3/25 at 9:47
+--------------------------------------------------------------
+Analyzing project: s10Analyst
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.3DAnalyst
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.AxControls
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Carto
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Controls
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Display
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Geometry
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.GlobeCore
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Output
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.System
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.SystemUI
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Version
+
+-------------------------
+
+Finished analysis. Check the Warnings in the Visual Studio Error List window for migration issues. 0 migration issues found.
