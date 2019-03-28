@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("s10Analyst")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HYZN")]
+[assembly: AssemblyCompany("绘宇智能")]
 [assembly: AssemblyProduct("s10Analyst")]
 [assembly: AssemblyCopyright("Copyright © LGLONG519")]
 [assembly: AssemblyTrademark("")]

@@ -160,6 +160,105 @@
 		输出格式
 			
 	Math
+		namespace System
+		{
+		    // 为三角函数、对数函数和其他通用数学函数提供常数和静态方法。
+		    public static class Math
+		    {
+		        // 表示自然对数的底，它由常数 e 指定。
+		        public const double E = 2.71828;
+		        // 表示圆的周长与其直径的比值，它通过常数 n 指定。
+		        public const double PI = 3.14159;
+		        // 返回结果: 绝对值 x，满足 0 ≤ x ≤System.xx.MaxValue。
+		        public static <number> Abs(<number> value);
+		        // 返回余弦值为指定数字的角度。
+		        // 一个表示余弦值的数字，其中 -1 ≤d≤ 1。
+		        // 角度 θ，以弧度为单位，满足 0 ≤θ≤π- 或 -如果 d < -1 或 d > 1，则为 System.Double.NaN。
+		        public static double Acos(double d);
+		        // 返回正弦值为指定数字的角度。
+		        // 一个表示正弦值的数字，其中 -1 ≤d≤ 1。
+		        // 角度 θ，以弧度为单位，满足 -π/2 ≤θ≤π/2- 或 -如果 d < -1 或 d > 1，则为 System.Double.NaN。
+		        public static double Asin(double d);
+		        // 返回正切值为指定数字的角度。
+		        // 角度 θ，以弧度为单位，满足 -π/2 ≤θ≤π/2。- 或 -如果 d 等于 System.Double.NaN，则为 System.Double.NaN；如果
+		        // d 等于 System.Double.NegativeInfinity，则为舍入为双精度值 (-1.5707963267949) 的 -π/2；或者如果
+		        // d 等于 System.Double.PositiveInfinity，则为舍入为双精度值 (1.5707963267949) 的 π/2。
+		        public static double Atan(double d);
+		        // 返回正切值为两个指定数字的商的角度。
+		        // 点的 y 坐标。
+		        // 点的 x 坐标。
+		        // 返回结果:
+		        // 角度 θ，以弧度为单位，满足 -π≤θ≤π，且 tan(θ) = y / x，其中 (x, y) 是笛卡尔平面中的一个点。请看下面：如果 (x,
+		        // y) 在第 1 象限，则 0 < θ < π/2。如果 (x, y) 在第 2 象限，则 π/2 < θ≤π。如果 (x, y) 在第 3 象限，则
+		        // -π < θ < -π/2。如果 (x, y) 在第 4 象限，则 -π/2 < θ < 0。如果点在象限的边界上，则返回值如下：如果 y 为 0
+		        // 并且 x 不为负值，则 θ = 0。如果 y 为 0 并且 x 为负值，则 θ = π。如果 y 为正值并且 x 为 0，则 θ = π/2。如果
+		        // y 负值并且 x 为 0，则 θ = -π/2。
+		        public static double Atan2(double y, double x);
+		        // 生成两个 32 位数字的完整乘积。
+		        //   a: 第一个乘数 System.Int32。
+		        //   b: 第二个乘数 System.Int32。
+		        // 返回结果: 包含指定数字乘积的 System.Int64。
+		        public static long BigMul(int a, int b);
+		        // 返回大于或等于指定的十进制数的最小整数值。
+		        // 返回大于或等于 d 的最小整数值。请注意，此方法返回 <number>，而不是整数类型。
+		        public static <number> Ceiling(<number> d);
+		        // 返回指定角度的余弦值。
+		        public static double Cos(double d);
+		        // 返回指定角度的双曲余弦值。
+		        public static double Cosh(double value);
+		        // 计算两个 32 位有符号整数的商，并通过输出参数返回余数。
+		        //   a/b:
+		        //   result: 余数。
+		        public static <number> DivRem(<number> a, <number> b, out <number> result);
+		        // 返回 e 的指定次幂。
+		        public static double Exp(double d);
+		        // 返回小于或等于指定小数的最大整数。
+		        public static <number> Floor(<number> d);
+		        // 返回一指定数字被另一指定数字相除的余数。
+		        public static double IEEERemainder(double x, double y);
+		        // 返回指定数字的自然对数（底为 e）。
+		        public static double Log(double d);
+		        // 返回指定数字在使用指定底时的对数。
+		        public static double Log(double a, double newBase);
+		        // 返回指定数字以 10 为底的对数。
+		        public static double Log10(double d);
+		        // 返回两个数中较大的一个。
+		        public static <number> Max(<number> val1, <number> val2);
+		        // 返回两个数中较小的一个。
+		        public static <number> Min(<number> val1, <number> val2);
+		        // 返回指定数字的指定次幂。
+		        // 数字 x 的 y 次幂。
+		        public static double Pow(double x, double y);
+		        // 将小数值舍入到最接近的整数值。
+		        // 返回结果: 最接近参数 d 的整数。如果 d 的小数部分正好处于两个整数中间，其中一个整数为偶数，另一个整数为奇数，则返回偶数。请注意，此方法返回 传入参数类型，而不是整数类型。
+		        public static <number> Round(<number> d);
+		        // 将小数值按指定的小数位数舍入。
+		        //   digits: 返回值中的小数位数。
+		        public static <number> Round(<number> d, int digits);
+		        // 将小数值舍入到最接近的整数。一个参数，指定当一个值正好处于另两个数中间时如何舍入这个值。
+		        public static <number> Round(<number> d, MidpointRounding mode);
+		        // 将小数值按指定的小数位数舍入。一个参数，指定当一个值正好处于另两个数中间时如何舍入这个值。
+		        public static <number> Round(<number> value, int digits, MidpointRounding mode);
+		        // 返回表示数字符号的值。
+		        // 一个指示 value 的符号的数字，如下表所示。返回值含义-1value 小于零。0value 等于零。1value 大于零。
+		        public static int Sign(<number> value);
+		        // 返回指定角度的正弦值。
+		        public static double Sin(double a);
+		        // 返回指定角度的双曲正弦值。
+		        public static double Sinh(double value);
+		        // 返回指定数字的平方根。
+		        public static double Sqrt(double d);
+		        // 返回指定角度的正切值。
+		        // 返回结果: a 的正切值。
+		        public static double Tan(double a);
+		        // 返回指定角度的双曲正切值。
+		        // 返回结果: value 的双曲正切值。
+		        public static double Tanh(double value);
+		        // 计算指定小数的整数部分。
+		        // d 的整数部分（即舍弃小数位后剩余的数）。
+		        public static <number> Truncate(<number> d);
+		    }
+		}
 	定时器
 		System.Threading.Timer
 			// state 作为 cb 的参数，null

@@ -19,6 +19,7 @@ namespace Test
         }
         public static void Main(string[] args)
         {
+            /*
             var s = new S();
             s.Out("O");
             IIfc ifc = (IIfc)s;
@@ -45,6 +46,12 @@ namespace Test
             //DateTime date = DateTime.Today;
             date = DateTime.FromFileTime(45644646);
             Console.WriteLine(date.ToString());
+            */
+            Console.WriteLine(Math.Round(1.1534848, 2).ToString());
+            Console.WriteLine(Math.Round(1.5).ToString());
+            Console.WriteLine(Math.Round(-1.5).ToString());
+            Console.WriteLine(Math.Round(-2.5).ToString());
+            Console.WriteLine((Math.Asin(0.5) * 180/Math.PI).ToString());
             Console.ReadLine();
         }
         public void h()
@@ -59,7 +66,7 @@ namespace Test
         string Out(string str);
         int Innt(int num);
     }
-    class S : IIfc
+    partial class S : IIfc
     {
         int n = 10;
         public string Out(string str)
