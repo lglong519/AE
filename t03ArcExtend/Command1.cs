@@ -14,7 +14,6 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Editor;
 using System.Windows.Forms;
-using ESRI.ArcGIS.Desktop.AddIns;
 
 namespace t03ArcExtend
 {
@@ -132,7 +131,11 @@ namespace t03ArcExtend
         public override void OnClick()
         {
             // TODO: Add Command1.OnClick implementation
-            MessageBox.Show("H");
+            //IMap map = ArcMap.Document.FocusMap;
+            MessageBox.Show("123");
+            //MessageBox.Show(map.Name);
+            //MessageBox.Show(map.LayerCount.ToString());
+            //MessageBox.Show(map.get_Layer(0).Name);
         }
 
         #endregion

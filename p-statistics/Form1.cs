@@ -6,17 +6,20 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using ESRI.ArcGIS.Controls;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
+using ESRI.ArcGIS.Display;
 
 namespace p_statistics
 {
     public partial class Form1 : Form
     {
         private int layerCount = 0;
+        private IGraphicsContainer pGC;
         public Form1()
         {
             init(0);
@@ -34,6 +37,7 @@ namespace p_statistics
             SetDesktopLocation(System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Size.Width / 2 + 300, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Size.Height - 500);
             axMapControl1.OnAfterScreenDraw += new IMapControlEvents2_Ax_OnAfterScreenDrawEventHandler(axMapControl1_OnAfterScreenDraw);
             comboBox1.SelectedIndexChanged += new EventHandler(comboBox1_SelectedIndexChanged);
+            CheckForIllegalCrossThreadCalls = false;
         }
         // 地图绘制完成后更新下拉图层列表
         private void axMapControl1_OnAfterScreenDraw(object sender, IMapControlEvents2_OnAfterScreenDrawEvent e)
@@ -84,8 +88,10 @@ namespace p_statistics
                 }
             }
         }
+        // fields
         private void button1_Click(object sender, EventArgs e)
         {
+            /*
             if (!checkLayerCount()) return;
             IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
             IFeatureClass featureClass = featureLayer.FeatureClass;
@@ -105,7 +111,40 @@ namespace p_statistics
                 feature = featureCursor.NextFeature();
                 break;
             }
+            */
+            IActiveView activeView = axMapControl1.ActiveView;
+            pGC = activeView.FocusMap as IGraphicsContainer;
+            IPoint ipNew = new PointClass();
+            //屏幕坐标转地图坐标
+            //ipNew = activeView.ScreenDisplay.DisplayTransformation.ToMapPoint(e.x, e.y);
+            ipNew.PutCoords(0, 0);
+            IRgbColor color = new RgbColorClass();
+            color.Red = 255;
+            color.Blue = 255;
+            color.Green = 0;
+            /*
+            /文字标注
+            ITextSymbol symbol = new TextSymbol();
+            symbol.Color = color as IColor;
+            symbol.Size = 15;
+            symbol.Font.Bold = true;
+            ITextElement textelement = new TextElementClass();
+            textelement.Symbol = symbol;
+            textelement.Text = "Text";
+            IElement element = textelement as IElement;
+            */
+            //点标注
+            ISimpleMarkerSymbol symbol = new SimpleMarkerSymbolClass();
+            symbol.Color = color;
+            symbol.Size = 4;
+            symbol.Style = esriSimpleMarkerStyle.esriSMSDiamond;
+            IMarkerElement markerElement = new MarkerElementClass();
+            //markerElement.Symbol = symbol;
+            IElement element = markerElement as IElement;
 
+            element.Geometry = ipNew;
+            pGC.AddElement(element, 0);
+            activeView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
         private bool checkLayerCount()
         {
@@ -116,146 +155,314 @@ namespace p_statistics
             }
             return true;
         }
-
+        // calc deg
         private void button2_Click(object sender, EventArgs e)
         {
             if (!checkLayerCount()) return;
             IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
             IFeatureClass featureClass = featureLayer.FeatureClass;
-            IFeatureCursor featureCursor = featureClass.Search(null, false);
+            int indexGDDB = featureClass.FindField("GDDB");
+            int indexDLBM = featureClass.FindField("DLBM");
+            int indexGDZD = featureClass.FindField("GDZD");
+            int indexZWDC1 = featureClass.FindField("ZWDC1");
+            int indexCLBXS1 = featureClass.FindField("CLBXS1");
+            int indexZWDC2 = featureClass.FindField("ZWDC2");
+            int indexCLBXS2 = featureClass.FindField("CLBXS2");
+            int indexZWDC3 = featureClass.FindField("ZWDC3");
+            int indexCLBXS3 = featureClass.FindField("CLBXS3");
+            if (indexGDDB < 0)
+            {
+                MessageBox.Show("缺少字段：（GDDB）耕地等别");
+                return;
+            }
+            if (indexDLBM < 0)
+            {
+                MessageBox.Show("缺少字段：（DLBM）地类编码");
+                return;
+            }
+            if (indexGDZD < 0)
+            {
+                MessageBox.Show("缺少字段：（GDZD）耕地制度");
+                return;
+            }
+            if (indexZWDC1 < 0)
+            {
+                MessageBox.Show("缺少字段：（ZWDC1）作物单产1");
+                return;
+            }
+            if (indexCLBXS1 < 0)
+            {
+                MessageBox.Show("缺少字段：（CLBXS1）产量比系数1");
+                return;
+            }
+            if (indexZWDC2 < 0)
+            {
+                MessageBox.Show("缺少字段：（ZWDC2）作物单产1");
+                return;
+            }
+            if (indexCLBXS2 < 0)
+            {
+                MessageBox.Show("缺少字段：（CLBXS2）产量比系数1");
+                return;
+            }
+            IQueryFilter queryFilter = new QueryFilterClass();
+            queryFilter.WhereClause = "DLBM in('01','0101','0102','0103')";
+            IFeatureCursor featureCursor = featureClass.Search(queryFilter, false);
             IFeature feature = featureCursor.NextFeature();
             DateTime now = DateTime.Now;
+
+            int count = featureClass.FeatureCount(queryFilter);
+            double c = 1;
+            progressBar1.Visible = true;
+
             int i = 0;
             while (feature != null)
             {
-                int index = feature.Fields.FindField("GDDB");
-                if (index < 0 || !feature.Fields.get_Field(index).Editable)
+                progressBar1.Value = (int)Math.Ceiling(c++ / count * 100.0);
+                int GDZD = int.Parse(feature.get_Value(indexGDZD).ToString());
+                int d = 0;
+                switch (GDZD)
                 {
-                    feature = featureCursor.NextFeature();
-                    continue;
+                    case 1: d = deg(double.Parse(feature.get_Value(indexZWDC1).ToString()) * double.Parse(feature.get_Value(indexCLBXS1).ToString()));
+                        break;
+                    case 2: d = deg(double.Parse(feature.get_Value(indexZWDC1).ToString()) * double.Parse(feature.get_Value(indexCLBXS1).ToString()) + double.Parse(feature.get_Value(indexZWDC2).ToString()) * double.Parse(feature.get_Value(indexCLBXS2).ToString()));
+                        break;
                 }
-                //feature.set_Value(index, Math.Floor(i / 6180.00));
-                feature.set_Value(index, i);
+                feature.set_Value(indexGDDB, d);
                 feature.Store();
                 feature = featureCursor.NextFeature();
                 i++;
             }
-            int sc = (DateTime.Now - now).Seconds;
-            if (i == 0)
-            {
-                MessageBox.Show("GDDB not found" + "\n--ms: " + sc);
-            }
-            else
-            {
-                MessageBox.Show("modified features count: " + i + "\n--ms: " + sc);
-            }
+            TimeSpan span = DateTime.Now - now;
+            //MessageBox.Show("success count：" + i + "\ncost time: " + span.Minutes + ":" + span.Seconds);
+            MessageBox.Show("完成");
+            progressBar1.Visible = false;
         }
-
+        private int deg(double dancan)
+        {
+            if (dancan > 1400)
+            {
+                return 1;
+            }
+            if (dancan > 1300 && dancan <= 1400)
+            {
+                return 2;
+            }
+            if (dancan > 1200 && dancan <= 1300)
+            {
+                return 3;
+            }
+            if (dancan > 1100 && dancan <= 1200)
+            {
+                return 4;
+            }
+            if (dancan > 1000 && dancan <= 1100)
+            {
+                return 5;
+            }
+            if (dancan > 900 && dancan <= 1000)
+            {
+                return 6;
+            }
+            if (dancan > 800 && dancan <= 900)
+            {
+                return 7;
+            }
+            if (dancan > 700 && dancan <= 800)
+            {
+                return 8;
+            }
+            if (dancan > 600 && dancan <= 700)
+            {
+                return 9;
+            }
+            if (dancan > 500 && dancan <= 600)
+            {
+                return 10;
+            }
+            if (dancan > 400 && dancan <= 500)
+            {
+                return 11;
+            }
+            if (dancan > 300 && dancan <= 400)
+            {
+                return 12;
+            }
+            if (dancan > 200 && dancan <= 300)
+            {
+                return 13;
+            }
+            if (dancan > 100 && dancan <= 200)
+            {
+                return 14;
+            }
+            return 15;
+        }
+        #region angle
         private void button3_Click(object sender, EventArgs e)
         {
             if (!checkLayerCount()) return;
+            double deg;
+            if (!double.TryParse(comboBox3.Text.Trim(), out deg))
+            {
+                MessageBox.Show("invalid angle");
+                return;
+            };
             IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
             IFeatureClass featureClass = featureLayer.FeatureClass;
             if (featureClass.ShapeType != esriGeometryType.esriGeometryPolygon)
             {
                 return;
             }
-            int angIndex = featureClass.FindField("angle");
-            /*
-            IDataset dataset = featureClass as IDataset;
-            IWorkspaceEdit wse = dataset.Workspace as IWorkspaceEdit;
-            wse.StartEditing(true);
-            wse.StartEditOperation();
-            */
-            if (angIndex < 0)
+            IGraphicsContainer pGC = axMapControl1.ActiveView.FocusMap as IGraphicsContainer;
+            pGC.DeleteAllElements();
+            //int angIndex = featureClass.FindField("angle");
+            try
             {
-                IField angField = new FieldClass();
-                IFieldEdit fieldEdit = angField as IFieldEdit;
-                fieldEdit.Name_2 = "angle";
-                fieldEdit.IsNullable_2 = false;
-                fieldEdit.Required_2 = true;
-                fieldEdit.DefaultValue_2 = "";
-                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-                featureClass.AddField(angField);
-            }
-            angIndex = featureClass.FindField("angle");
-            if (angIndex < 0)
-            {
-                throw new Exception("Field: angle not found");
-            }
-            
+                //if (angIndex < 0)
+                //{
+                //    IField angField = new FieldClass();
+                //    IFieldEdit fieldEdit = angField as IFieldEdit;
+                //    fieldEdit.Name_2 = "angle";
+                //    fieldEdit.IsNullable_2 = false;
+                //    fieldEdit.Required_2 = true;
+                //    fieldEdit.DefaultValue_2 = "";
+                //    fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                //    featureClass.AddField(angField);
+                //}
+                //angIndex = featureClass.FindField("angle");
+                //if (angIndex < 0)
+                //{
+                //    throw new Exception("Field: angle not found");
+                //}
 
-            IFeatureCursor featureCursor = featureClass.Search(null, false);
-            IFeature feature = featureCursor.NextFeature();
-            DateTime now = DateTime.Now;
-            while (feature != null)
-            {
-                //MessageBox.Show(featureClass.FindField("angle").ToString());
-                //feature.set_Value(angIndex, "");
-                //feature.Store();
-                //feature = featureCursor.NextFeature();
-                IPointCollection pointCollection = feature.Shape as IPointCollection;
-                MessageBox.Show(pointCollection.PointCount.ToString());
-                IPoint f = new PointClass();
-                IPoint c = new PointClass();
-                IPoint l = new PointClass();
-                pointCollection.QueryPoint(0, f);
-                pointCollection.QueryPoint(1, c);
-                pointCollection.QueryPoint(2, l);
-                MessageBox.Show("angle:" + getAngle(c, f, l));
-                return;
-                //MessageBox.Show("--feature");
+                IFeatureCursor featureCursor = featureClass.Search(null, false);
+                IFeature feature = featureCursor.NextFeature();
+                DateTime now = DateTime.Now;
+                int count = featureClass.FeatureCount(null);
+                double c = 1;
+                progressBar1.Visible = true;
+                while (feature != null)
+                {
+                    //MessageBox.Show(featureClass.FindField("angle").ToString());
+
+                    //ThreadPool.QueueUserWorkItem(state => calcAllAngles(feature));
+                    calcAllAngles(feature);
+
+                    //feature.set_Value(angIndex, calcAllAngles(feature));
+                    //feature.Store();
+                    progressBar1.Value = (int)Math.Ceiling(c++ / count * 100.0);
+                    //MessageBox.Show(progressBar1.Value.ToString());
+                    //this.Refresh();
+                    //System.Threading.Thread.Sleep(1200);
+                    feature = featureCursor.NextFeature();
+                }
+                /*
+                wse.StopEditOperation();
+                wse.StopEditing(true);
+                */
+                double sc = (DateTime.Now - now).TotalSeconds;
+                axMapControl1.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+                //MessageBox.Show(sc + "--Seconds\ncount: " + c);
+                MessageBox.Show("完成");
+                progressBar1.Visible = false;
             }
-            /*
-            wse.StopEditOperation();
-            wse.StopEditing(true);
-            */
-            int sc = (DateTime.Now - now).Seconds;
-            MessageBox.Show(sc + "--Seconds");
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if (ex.Message.Contains("schema lock"))
+                {
+                    MessageBox.Show("图层被占用");
+                }
+            }
         }
-        private void getAndSetAllAngles(IFeature feature)
+        private void calcAllAngles(IFeature feature)
         {
+            if (feature==null)
+            {
+                return;
+            }
+            IActiveView activeView = axMapControl1.ActiveView;
             IPointCollection pointCollection = feature.Shape as IPointCollection;
-            if (pointCollection.PointCount<3)
+            pGC = activeView.FocusMap as IGraphicsContainer;
+            //MessageBox.Show(activeView.FocusMap.Name);
+
+            if (pointCollection.PointCount < 4)
             {
                 throw new Exception("Topological Error");
             }
             IPoint f = new PointClass();
-            IPoint c = new PointClass();
+            //IPoint c = new PointClass();
             IPoint l = new PointClass();
             int fi;
             int ci;
             int li;
-            for (int i = 0; i < pointCollection.PointCount; i++)
+            //string angle = "";
+            int pointCount = pointCollection.PointCount - 1;
+            for (int i = 0; i < pointCount; i++)
             {
+                IPoint c = new PointClass();
                 fi = i - 1;
                 ci = i;
                 li = i + 1;
-                if (i==0)
+                if (i == 0)
                 {
-                    fi = pointCollection.PointCount - 1;
+                    fi = pointCount - 1;
                 }
-                if (i == pointCollection.PointCount-1)
+                if (i == pointCount - 1)
                 {
-                    fi = 0;
+                    li = 0;
                 }
                 pointCollection.QueryPoint(fi, f);
                 pointCollection.QueryPoint(ci, c);
                 pointCollection.QueryPoint(li, l);
+                double deg = getAngle(c, f, l);
+                //angle += deg + "; ";
+                // 添加标记
+                if (deg <= double.Parse(comboBox3.Text.Trim()))
+                {
+                    IRgbColor color = new RgbColorClass();
+                    color.Red = 255;
+                    color.Blue = 255;
+                    color.Green = 0;
+                    ISimpleMarkerSymbol symbol = new SimpleMarkerSymbolClass();
+                    symbol.Color = color;
+                    symbol.Size = 4;
+                    symbol.Style = esriSimpleMarkerStyle.esriSMSDiamond;
+                    IMarkerElement markerElement = new MarkerElementClass();
+                    markerElement.Symbol = symbol;
+                    IElement element = markerElement as IElement;
+                    element.Geometry = c;
+                    pGC.AddElement(element, 0);
+                }
             }
+            //MessageBox.Show(angle);
+            //return angle;
+            return ;
         }
-        private double getAngle(IPoint center,IPoint first,IPoint last)
+        private double getAngle(IPoint center, IPoint first, IPoint last)
         {
             double c2 = Math.Pow(first.X - last.X, 2) + Math.Pow(first.Y - last.Y, 2);
             double f2 = Math.Pow(center.X - last.X, 2) + Math.Pow(center.Y - last.Y, 2);
             double l2 = Math.Pow(first.X - center.X, 2) + Math.Pow(first.Y - center.Y, 2);
-            double acos=Math.Acos((f2 + l2 - c2) / (2 * Math.Sqrt(f2 * l2)));
-            return acos*180/Math.PI;
+            double acos = Math.Acos((f2 + l2 - c2) / (2 * Math.Sqrt(f2 * l2)));
+            return Math.Round(acos * 180 / Math.PI, 2);
         }
+        #endregion
 
         private void button4_Click(object sender, EventArgs e)
         {
+            pGC = axMapControl1.Map as IGraphicsContainer;
+            pGC.DeleteAllElements();
+            axMapControl1.ActiveView.Refresh();
+        }
 
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            axMapControl1.Map.ClearLayers();
+            axTOCControl1.Update();
+            axTOCControl1.Refresh();
+            axMapControl1.ActiveView.Refresh();
         }
     }
 }

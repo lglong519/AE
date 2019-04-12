@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("t03ArcExtend")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("HYZN")]
 [assembly: AssemblyProduct("t03ArcExtend")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2019")]
+[assembly: AssemblyCopyright("Copyright © LGLONG519")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
