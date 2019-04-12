@@ -398,6 +398,15 @@
 		10.解决方案资源管理器->右键->当前方案名称->属性->系统必备(p)...->选择必要的组件（默认已选好）
 		11.设置公司、作者、图标、平台：解决方案资源管理器->取消自动隐藏->属性
 		12.菜单栏->生成->生成解决方案->Debug/Release
+	颜色Color
+		struct Color
+		{
+			// 获取名称颜色
+			public static Color Cyan { get; }
+			// 获取 RGB 颜色,alpha [0,100]
+			public static Color FromArgb(int red, int green, int blue);
+			public static Color FromArgb(int alpha, int red, int green, int blue);
+		}
 winform
 	System.Windows.Forms.DataGridView
 		添加列
@@ -411,3 +420,24 @@ winform
 			this.dataGridView1.Columns[0].HeaderCell.Value = "字段1";
             this.dataGridView1.Columns[1].HeaderCell.Value = "字段2";
             this.dataGridView1.Columns[2].HeaderCell.Value = "字段3";
+        头部设置
+        	背景、字体样式
+        		// 关闭默认样式
+        		dataGridView1.EnableHeadersVisualStyles= false;
+        		dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.Yellow;
+        		// 左上侧第一个单元格 文字及样式
+        		dataGridView1.TopLeftHeaderCell.Value = "面积";
+        		dataGridView1.TopLeftHeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+	            dataGridView1.TopLeftHeaderCell.Style.BackColor = Color.YellowGreen;
+        行设置
+        	// 创建行
+        	DataGridViewRow row = new DataGridViewRow(); 
+        	// 设置左侧单元格文字
+            row.HeaderCell.Value = "合计";
+        	// 创建单元格
+            DataGridViewTextBoxCell cell = new DataGridViewTextBoxCell();
+            cell.Value = “123”;
+        	// 添加单元格
+            row.Cells.Add(cell);
+        	// 添加建行
+            dataGridView1.Rows.Add(row);
