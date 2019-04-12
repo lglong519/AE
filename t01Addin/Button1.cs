@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
+using ESRI.ArcGIS.Carto;
 
 namespace t01Addin
 {
@@ -18,7 +19,8 @@ namespace t01Addin
             //  TODO: Sample code showing how to access button host
             //
             ArcMap.Application.CurrentTool = null;
-            MessageBox.Show("T");
+            IMap map = ArcMap.Document.FocusMap;
+            MessageBox.Show("T123: " + map.LayerCount);
 
         }
         protected override void OnUpdate()
