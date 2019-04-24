@@ -13,6 +13,8 @@ using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
+using ESRI.ArcGIS.DataSourcesGDB;
+using System.Threading.Tasks;
 
 namespace p_statistics
 {
@@ -38,6 +40,15 @@ namespace p_statistics
             axMapControl1.OnAfterScreenDraw += new IMapControlEvents2_Ax_OnAfterScreenDrawEventHandler(axMapControl1_OnAfterScreenDraw);
             comboBox1.SelectedIndexChanged += new EventHandler(comboBox1_SelectedIndexChanged);
             CheckForIllegalCrossThreadCalls = false;
+            for (int n = 0; n < 16; n++)
+            {
+                comboBox4.Items.Add(n);
+            }
+            comboBox4.SelectedIndex = 0;
+            ToolTip t = new ToolTip();
+            t.SetToolTip(button6, "Save");
+            t.InitialDelay = 0;
+            button6.MouseEnter += new EventHandler((object sender, EventArgs e) => { t.ShowAlways=true; });
         }
         // 地图绘制完成后更新下拉图层列表
         private void axMapControl1_OnAfterScreenDraw(object sender, IMapControlEvents2_OnAfterScreenDrawEvent e)
@@ -163,7 +174,7 @@ namespace p_statistics
             IFeatureClass featureClass = featureLayer.FeatureClass;
             int indexGDDB = featureClass.FindField("GDDB");
             int indexDLBM = featureClass.FindField("DLBM");
-            int indexGDZD = featureClass.FindField("GDZD");
+            int indexGZZD = featureClass.FindField("GZZD");
             int indexZWDC1 = featureClass.FindField("ZWDC1");
             int indexCLBXS1 = featureClass.FindField("CLBXS1");
             int indexZWDC2 = featureClass.FindField("ZWDC2");
@@ -180,9 +191,9 @@ namespace p_statistics
                 MessageBox.Show("缺少字段：（DLBM）地类编码");
                 return;
             }
-            if (indexGDZD < 0)
+            if (indexGZZD < 0)
             {
-                MessageBox.Show("缺少字段：（GDZD）耕地制度");
+                MessageBox.Show("缺少字段：（GZZD）耕地制度");
                 return;
             }
             if (indexZWDC1 < 0)
@@ -219,9 +230,9 @@ namespace p_statistics
             while (feature != null)
             {
                 progressBar1.Value = (int)Math.Ceiling(c++ / count * 100.0);
-                int GDZD = int.Parse(feature.get_Value(indexGDZD).ToString());
+                int GZZD = int.Parse(feature.get_Value(indexGZZD).ToString());
                 int d = 0;
-                switch (GDZD)
+                switch (GZZD)
                 {
                     case 1: d = deg(double.Parse(feature.get_Value(indexZWDC1).ToString()) * double.Parse(feature.get_Value(indexCLBXS1).ToString()));
                         break;
@@ -378,7 +389,7 @@ namespace p_statistics
         }
         private void calcAllAngles(IFeature feature)
         {
-            if (feature==null)
+            if (feature == null)
             {
                 return;
             }
@@ -438,7 +449,7 @@ namespace p_statistics
             }
             //MessageBox.Show(angle);
             //return angle;
-            return ;
+            return;
         }
         private double getAngle(IPoint center, IPoint first, IPoint last)
         {
@@ -464,5 +475,72 @@ namespace p_statistics
             axTOCControl1.Refresh();
             axMapControl1.ActiveView.Refresh();
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            ITableSort tableSort = new TableSortClass();
+            tableSort.Table = featureLayer.FeatureClass as ITable;
+            IQueryFilter queryFilter = new QueryFilterClass();
+            queryFilter.WhereClause = "GDDB=" + comboBox4.Text;
+            tableSort.QueryFilter = queryFilter;
+            tableSort.Fields = "GDDB";
+            tableSort.Sort(null);
+            ICursor cursor = tableSort.Rows;
+            IRow row = cursor.NextRow();
+            int index = featureLayer.FeatureClass.Fields.FindField("GDDB");
+            if (row != null)
+            {
+                IGeometry shape = (row as IFeature).Shape;
+                IPoint center = new PointClass();
+                center.PutCoords((shape as IArea).Centroid.X, (shape as IArea).Centroid.Y);
+                axMapControl1.CenterAt(center);
+                //让地图显示窗口立刻重新绘制，更新显示,避免先闪烁后缩放
+                axMapControl1.ActiveView.ScreenDisplay.UpdateWindow(); 
+                axMapControl1.FlashShape(shape, 2, 100, symbol);
+            }
+            else
+            {
+                MessageBox.Show("null");
+            }
+        }
+        private ISymbol symbol
+        {
+            get
+            {
+                ISimpleFillSymbol s = new SimpleFillSymbolClass();
+                s.Color = new RgbColorClass()
+                {
+                    Red = 255,
+                    Green = 0,
+                    Blue = 0
+                };
+                return s as ISymbol;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (axMapControl1.DocumentFilename == null)
+            {
+                MessageBox.Show("mapDocument is empty");
+                return;
+            }
+            IMapDocument pMapDocument = new MapDocumentClass();
+            pMapDocument.Open(axMapControl1.DocumentFilename, "");
+            pMapDocument.ReplaceContents(axMapControl1.Map as IMxdContents);
+            if (pMapDocument.get_IsReadOnly(axMapControl1.DocumentFilename))
+            {
+                MessageBox.Show("mapDocument is read-only");
+            }
+            else
+            {
+                pMapDocument.Save(pMapDocument.UsesRelativePaths, true);
+                pMapDocument.Close();
+                MessageBox.Show("保存文档成功");
+            }
+        }
+
     }
 }

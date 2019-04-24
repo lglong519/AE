@@ -1,5 +1,6 @@
-Debug/
+**/Debug/*
+**/Release/*
+!**/*.bat
 obj/
-bin/
 *.suo
 *.lock

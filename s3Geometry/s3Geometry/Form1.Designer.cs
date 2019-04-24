@@ -49,13 +49,31 @@
             this.alterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.axMapControl1 = new ESRI.ArcGIS.Controls.AxMapControl();
-            this.axToolbarControl1 = new ESRI.ArcGIS.Controls.AxToolbarControl();
+            this.其他ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.圆形点ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.多点检测ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.shpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.curveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.divideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.检测表ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.shxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.constructAlongToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.constructAlongSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.constructAngleBisectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.axLicenseControl1 = new ESRI.ArcGIS.Controls.AxLicenseControl();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.获取我的文档ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.iniToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.axMapControl1 = new ESRI.ArcGIS.Controls.AxMapControl();
+            this.axTOCControl1 = new ESRI.ArcGIS.Controls.AxTOCControl();
+            this.axToolbarControl1 = new ESRI.ArcGIS.Controls.AxToolbarControl();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axLicenseControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axTOCControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -66,10 +84,13 @@
             this.iGeometryCollectionToolStripMenuItem,
             this.iSegmentCollectionToolStripMenuItem,
             this.iPointCollectionToolStripMenuItem,
-            this.coordinateSystemToolStripMenuItem});
+            this.coordinateSystemToolStripMenuItem,
+            this.其他ToolStripMenuItem,
+            this.curveToolStripMenuItem,
+            this.pointToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(557, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(703, 25);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -140,21 +161,21 @@
             // addSegmentToolStripMenuItem
             // 
             this.addSegmentToolStripMenuItem.Name = "addSegmentToolStripMenuItem";
-            this.addSegmentToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.addSegmentToolStripMenuItem.Text = "AddSegment";
+            this.addSegmentToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.addSegmentToolStripMenuItem.Text = "AddSegment(波浪线)";
             this.addSegmentToolStripMenuItem.Click += new System.EventHandler(this.addSegmentToolStripMenuItem_Click);
             // 
             // querySegmentToolStripMenuItem
             // 
             this.querySegmentToolStripMenuItem.Name = "querySegmentToolStripMenuItem";
-            this.querySegmentToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.querySegmentToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.querySegmentToolStripMenuItem.Text = "QuerySegment";
             this.querySegmentToolStripMenuItem.Click += new System.EventHandler(this.querySegmentToolStripMenuItem_Click);
             // 
             // setSegmentToolStripMenuItem
             // 
             this.setSegmentToolStripMenuItem.Name = "setSegmentToolStripMenuItem";
-            this.setSegmentToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.setSegmentToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.setSegmentToolStripMenuItem.Text = "SetSegment";
             this.setSegmentToolStripMenuItem.Click += new System.EventHandler(this.setSegmentToolStripMenuItem_Click);
             // 
@@ -220,21 +241,100 @@
             this.setToolStripMenuItem.Text = "Set";
             this.setToolStripMenuItem.Click += new System.EventHandler(this.setToolStripMenuItem_Click);
             // 
-            // axMapControl1
+            // 其他ToolStripMenuItem
             // 
-            this.axMapControl1.Location = new System.Drawing.Point(3, 50);
-            this.axMapControl1.Name = "axMapControl1";
-            this.axMapControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axMapControl1.OcxState")));
-            this.axMapControl1.Size = new System.Drawing.Size(554, 297);
-            this.axMapControl1.TabIndex = 2;
+            this.其他ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.圆形点ToolStripMenuItem,
+            this.多点检测ToolStripMenuItem,
+            this.shpToolStripMenuItem,
+            this.获取我的文档ToolStripMenuItem,
+            this.iniToolStripMenuItem});
+            this.其他ToolStripMenuItem.Name = "其他ToolStripMenuItem";
+            this.其他ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
+            this.其他ToolStripMenuItem.Text = "其他";
             // 
-            // axToolbarControl1
+            // 圆形点ToolStripMenuItem
             // 
-            this.axToolbarControl1.Location = new System.Drawing.Point(0, 23);
-            this.axToolbarControl1.Name = "axToolbarControl1";
-            this.axToolbarControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axToolbarControl1.OcxState")));
-            this.axToolbarControl1.Size = new System.Drawing.Size(557, 28);
-            this.axToolbarControl1.TabIndex = 1;
+            this.圆形点ToolStripMenuItem.Name = "圆形点ToolStripMenuItem";
+            this.圆形点ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.圆形点ToolStripMenuItem.Text = "圆形点";
+            this.圆形点ToolStripMenuItem.Click += new System.EventHandler(this.圆形点ToolStripMenuItem_Click);
+            // 
+            // 多点检测ToolStripMenuItem
+            // 
+            this.多点检测ToolStripMenuItem.Name = "多点检测ToolStripMenuItem";
+            this.多点检测ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.多点检测ToolStripMenuItem.Text = "多点检测";
+            this.多点检测ToolStripMenuItem.Click += new System.EventHandler(this.多点检测ToolStripMenuItem_Click);
+            // 
+            // shpToolStripMenuItem
+            // 
+            this.shpToolStripMenuItem.Name = "shpToolStripMenuItem";
+            this.shpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.shpToolStripMenuItem.Text = "创建临时SHP";
+            this.shpToolStripMenuItem.Click += new System.EventHandler(this.shpToolStripMenuItem_Click);
+            // 
+            // curveToolStripMenuItem
+            // 
+            this.curveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.divideToolStripMenuItem,
+            this.检测表ToolStripMenuItem,
+            this.shxToolStripMenuItem});
+            this.curveToolStripMenuItem.Name = "curveToolStripMenuItem";
+            this.curveToolStripMenuItem.Size = new System.Drawing.Size(53, 21);
+            this.curveToolStripMenuItem.Text = "Curve";
+            // 
+            // divideToolStripMenuItem
+            // 
+            this.divideToolStripMenuItem.Name = "divideToolStripMenuItem";
+            this.divideToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.divideToolStripMenuItem.Text = "Divide";
+            this.divideToolStripMenuItem.Click += new System.EventHandler(this.divideToolStripMenuItem_Click);
+            // 
+            // 检测表ToolStripMenuItem
+            // 
+            this.检测表ToolStripMenuItem.Name = "检测表ToolStripMenuItem";
+            this.检测表ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.检测表ToolStripMenuItem.Text = "检测表";
+            this.检测表ToolStripMenuItem.Click += new System.EventHandler(this.检测表ToolStripMenuItem_Click);
+            // 
+            // shxToolStripMenuItem
+            // 
+            this.shxToolStripMenuItem.Name = "shxToolStripMenuItem";
+            this.shxToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.shxToolStripMenuItem.Text = "shx";
+            this.shxToolStripMenuItem.Click += new System.EventHandler(this.shxToolStripMenuItem_Click);
+            // 
+            // pointToolStripMenuItem
+            // 
+            this.pointToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.constructAlongToolStripMenuItem,
+            this.constructAlongSelectedToolStripMenuItem,
+            this.constructAngleBisectorToolStripMenuItem});
+            this.pointToolStripMenuItem.Name = "pointToolStripMenuItem";
+            this.pointToolStripMenuItem.Size = new System.Drawing.Size(49, 21);
+            this.pointToolStripMenuItem.Text = "Point";
+            // 
+            // constructAlongToolStripMenuItem
+            // 
+            this.constructAlongToolStripMenuItem.Name = "constructAlongToolStripMenuItem";
+            this.constructAlongToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.constructAlongToolStripMenuItem.Text = "ConstructAlong";
+            this.constructAlongToolStripMenuItem.Click += new System.EventHandler(this.constructAlongToolStripMenuItem_Click);
+            // 
+            // constructAlongSelectedToolStripMenuItem
+            // 
+            this.constructAlongSelectedToolStripMenuItem.Name = "constructAlongSelectedToolStripMenuItem";
+            this.constructAlongSelectedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.constructAlongSelectedToolStripMenuItem.Text = "ConstructAlong Selected";
+            this.constructAlongSelectedToolStripMenuItem.Click += new System.EventHandler(this.constructAlongSelectedToolStripMenuItem_Click);
+            // 
+            // constructAngleBisectorToolStripMenuItem
+            // 
+            this.constructAngleBisectorToolStripMenuItem.Name = "constructAngleBisectorToolStripMenuItem";
+            this.constructAngleBisectorToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.constructAngleBisectorToolStripMenuItem.Text = "ConstructAngleBisector";
+            this.constructAngleBisectorToolStripMenuItem.Click += new System.EventHandler(this.constructAngleBisectorToolStripMenuItem_Click);
             // 
             // axLicenseControl1
             // 
@@ -245,25 +345,80 @@
             this.axLicenseControl1.Size = new System.Drawing.Size(32, 32);
             this.axLicenseControl1.TabIndex = 3;
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.dataGridView1.Location = new System.Drawing.Point(140, 403);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.Size = new System.Drawing.Size(563, 53);
+            this.dataGridView1.TabIndex = 7;
+            this.dataGridView1.Visible = false;
+            // 
+            // 获取我的文档ToolStripMenuItem
+            // 
+            this.获取我的文档ToolStripMenuItem.Name = "获取我的文档ToolStripMenuItem";
+            this.获取我的文档ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.获取我的文档ToolStripMenuItem.Text = "写入ini";
+            this.获取我的文档ToolStripMenuItem.Click += new System.EventHandler(this.获取我的文档ToolStripMenuItem_Click);
+            // 
+            // iniToolStripMenuItem
+            // 
+            this.iniToolStripMenuItem.Name = "iniToolStripMenuItem";
+            this.iniToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.iniToolStripMenuItem.Text = "ini";
+            this.iniToolStripMenuItem.Click += new System.EventHandler(this.iniToolStripMenuItem_Click);
+            // 
+            // axMapControl1
+            // 
+            this.axMapControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.axMapControl1.Location = new System.Drawing.Point(140, 53);
+            this.axMapControl1.Name = "axMapControl1";
+            this.axMapControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axMapControl1.OcxState")));
+            this.axMapControl1.Size = new System.Drawing.Size(563, 403);
+            this.axMapControl1.TabIndex = 6;
+            // 
+            // axTOCControl1
+            // 
+            this.axTOCControl1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.axTOCControl1.Location = new System.Drawing.Point(0, 53);
+            this.axTOCControl1.Name = "axTOCControl1";
+            this.axTOCControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axTOCControl1.OcxState")));
+            this.axTOCControl1.Size = new System.Drawing.Size(140, 403);
+            this.axTOCControl1.TabIndex = 4;
+            // 
+            // axToolbarControl1
+            // 
+            this.axToolbarControl1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.axToolbarControl1.Location = new System.Drawing.Point(0, 25);
+            this.axToolbarControl1.Name = "axToolbarControl1";
+            this.axToolbarControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axToolbarControl1.OcxState")));
+            this.axToolbarControl1.Size = new System.Drawing.Size(703, 28);
+            this.axToolbarControl1.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(557, 347);
-            this.Controls.Add(this.axLicenseControl1);
+            this.ClientSize = new System.Drawing.Size(703, 456);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.axMapControl1);
+            this.Controls.Add(this.axTOCControl1);
+            this.Controls.Add(this.axLicenseControl1);
             this.Controls.Add(this.axToolbarControl1);
             this.Controls.Add(this.menuStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "s3";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axLicenseControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axTOCControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -274,7 +429,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem iGeometryCollectionToolStripMenuItem;
         private ESRI.ArcGIS.Controls.AxToolbarControl axToolbarControl1;
-        private ESRI.ArcGIS.Controls.AxMapControl axMapControl1;
         private System.Windows.Forms.ToolStripMenuItem addGeometryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addGeometryCollectionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem insertGeometryCollectionToolStripMenuItem;
@@ -294,6 +448,23 @@
         private System.Windows.Forms.ToolStripMenuItem getToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setToolStripMenuItem;
         private ESRI.ArcGIS.Controls.AxLicenseControl axLicenseControl1;
+        private ESRI.ArcGIS.Controls.AxTOCControl axTOCControl1;
+        private System.Windows.Forms.ToolStripMenuItem 其他ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 圆形点ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 多点检测ToolStripMenuItem;
+        private ESRI.ArcGIS.Controls.AxMapControl axMapControl1;
+        private System.Windows.Forms.ToolStripMenuItem curveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem divideToolStripMenuItem;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.ToolStripMenuItem 检测表ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem shxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pointToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem constructAlongToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem shpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem constructAlongSelectedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem constructAngleBisectorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 获取我的文档ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem iniToolStripMenuItem;
     }
 }
 

@@ -59,7 +59,7 @@ namespace s2
                 //MessageBox.Show("select");
                 string filePath = openFileDialog.FileName;
                 // 加载地图文档用于更新或其它操作
-                mapDocument.Open(filePath, "");
+                //mapDocument.Open(filePath, "");
                 if (axMapControl1.CheckMxFile(filePath))
                 {
                     axMapControl1.MousePointer = esriControlsMousePointer.esriPointerHourglass;
@@ -129,35 +129,24 @@ namespace s2
         // 保存mxd
         private void saveMapDocument()
         {
-            if (mapDocument == null)
+            Console.WriteLine(axMapControl1.DocumentFilename);
+            if (axMapControl1.DocumentFilename == null)
             {
                 MessageBox.Show("mapDocument is empty");
+                return;
+            }
+            IMapDocument pMapDocument = new MapDocumentClass();
+            pMapDocument.Open(axMapControl1.DocumentFilename, "");
+            pMapDocument.ReplaceContents(axMapControl1.Map as IMxdContents);
+            if (pMapDocument.get_IsReadOnly(axMapControl1.DocumentFilename))
+            {
+                MessageBox.Show("mapDocument is read-only");
             }
             else
             {
-                // 判断文件是否只读
-                if (mapDocument.get_IsReadOnly(mapDocument.DocumentFilename) == true)
-                {
-                    MessageBox.Show("mapDocument is read-only");
-                }
-                else
-                {
-                    try
-                    {
-                        // 保存文件，默认是使用相对路径
-                        mapDocument.Save(mapDocument.UsesRelativePaths, true);
-                        MessageBox.Show("成功保存至：" + mapDocument.DocumentFilename);
-                    }
-                    catch (Exception e)
-                    {
-                        if (e.ToString().Contains("共享冲突"))
-                        {
-                            MessageBox.Show("文件被占用,保存失败");
-                            return;
-                        }
-                        MessageBox.Show(e.ToString());
-                    }
-                }
+                pMapDocument.Save(pMapDocument.UsesRelativePaths, true);
+                pMapDocument.Close();
+                MessageBox.Show("保存文档成功");
             }
         }
         // 另存mxd
@@ -230,7 +219,8 @@ namespace s2
                 // 获取路径+文件名
                 FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
                 string path = fileInfo.Directory.ToString();
-                string fileName = fileInfo.Name.Substring(0, fileInfo.Name.IndexOf("."));
+                //string fileName = fileInfo.Name.Substring(0, fileInfo.Name.IndexOf("."));
+                string fileName = fileInfo.Name;
                 try
                 {
                     // 添加 shp
@@ -324,10 +314,12 @@ namespace s2
         private void drawMapShape(IGeometry geometry)
         {
             // 定义图形样式：颜色，线框大小
-            IRgbColor rgbColor = new RgbColorClass();
-            rgbColor.Red = 255;
-            rgbColor.Green = 255;
-            rgbColor.Blue = 0;
+            IRgbColor rgbColor = new RgbColorClass()
+            {
+                Red = 255,
+                Green = 255,
+                Blue = 0
+            };
             object symbol = null;
             if (geometry.GeometryType == esriGeometryType.esriGeometryPolyline || geometry.GeometryType == esriGeometryType.esriGeometryLine)
             {
@@ -445,7 +437,7 @@ namespace s2
             // 目标
             object copyToMap = axPageLayoutControl1.ActiveView.FocusMap;
             // 复制的地图 写入 布局控件(缩略图)
-            objectCopy.Overwrite(copyMap,ref copyToMap);
+            objectCopy.Overwrite(copyMap, ref copyToMap);
         }
         // 图层加载结束事件
         private void axMapControl1_OnAfterScreenDraw(object sender, IMapControlEvents2_OnAfterScreenDrawEvent e)
