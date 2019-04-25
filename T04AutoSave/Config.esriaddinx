@@ -1,0 +1,30 @@
+﻿<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>T04AutoSave</Name>
+  <AddInID>{ecdc3398-48e7-424f-b24a-1e10514e74c3}</AddInID>
+  <Description>AutoSave Edit</Description>
+  <Version>1.0</Version>
+  <Image>Images\T04AutoSave.png</Image>
+  <Author>LGLONG519</Author>
+  <Company>HYZN-LGLONG519</Company>
+  <Date>2019/4/24</Date>
+  <Targets>
+    <Target name="Desktop" version="10.2" />
+  </Targets>
+  <AddIn language="CLR4.0" library="T04AutoSave.dll" namespace="T04AutoSave">
+    <ArcMap>
+      <Commands>
+        <!--<Button id="HYZN-LGLONG519_T04AutoSave_AutoSave" class="AutoSave" message="AutoSave Edit every 5 minutes" caption="AutoSave" tip="AutoSave Edit every 5 minutes" category="LGLONG519" image="Images\AutoSave.png" />-->
+        <ComboBox id="HYZN-LGLONG519_T04AutoSave_AutoSave" class="AutoSave" message="选择自动保存的时间，时间单位为分钟，默认5分钟" caption="分钟" tip="自动保存" category="LGLONG519" image="Images\AutoSave.png" sizeString="WW" rows="10" itemSizeString="WW" showCaption="true" />
+        <Button id="HYZN-LGLONG519_T04AutoSave_TestBar" class="TestBar" message="ArcMap.Application.StatusBar.Panes" caption="Message" tip="ArcMap.Application.StatusBar.Panes" category="LGLONG519" image="Images\TestBar.png" />
+      </Commands>
+      <Toolbars>
+        <Toolbar id="HYZN-LGLONG519_T04AutoSave_工具" caption="自动保存测试" showInitially="true">
+          <Items>
+            <Item refID="HYZN-LGLONG519_T04AutoSave_AutoSave" />
+            <Item refID="HYZN-LGLONG519_T04AutoSave_TestBar" />
+          </Items>
+        </Toolbar>
+      </Toolbars>
+    </ArcMap>
+  </AddIn>
+</ESRI.Configuration>
