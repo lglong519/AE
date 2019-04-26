@@ -86,7 +86,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArcGISAddin1.cs" />
+    <Compile Include="ToggleAutoSave.cs" />
     <Compile Include="AutoSave.cs" />
     <Compile Include="Config.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -100,9 +100,6 @@
       <LastGenOutput>Config.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </AddInContent>
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\T04AutoSave.png" />
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\AutoSave.png" />
@@ -135,10 +132,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Images\ArcGISAddin1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\TestBar.png" />
+    <AddInContent Include="Images\ToggleAutoSave.png" />
   </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>

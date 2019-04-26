@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Windows.Forms;
 using ESRI.ArcGIS.Editor;
 using ESRI.ArcGIS.Geodatabase;
+using System.Runtime.InteropServices;
 
 namespace T04AutoSave
 {
@@ -13,6 +12,7 @@ namespace T04AutoSave
         private System.Threading.Timer timer;
         public AutoSave()
         {
+            IniFile ini=new IniFile("cookie");
             for (int i = 1; i < 31; i++)
             {
                 Add(i.ToString());
@@ -20,23 +20,56 @@ namespace T04AutoSave
             Add("45");
             Add("60");
             Enabled = true;
-            Select(35502);
-            updateSaveTime(null);
+            iniCookies();
+            startTimer();
         }
-        protected override void OnUpdate()
+        //1.获取cookie
+        //2.如果cookie不存在，设置默认cookie为items[4]的cookie
+        //3.使用cookie设置选中项
+        private void iniCookies()
         {
+            IniFile ini = new IniFile("cookie");
+            string cookieStr = ini.get("cookie");
+            int defaultCookie = items[4].Cookie;
+            if (cookieStr == "")
+            {
+                ini.set("cookie", defaultCookie);
+                // 非鼠标事件不会触发 OnSelChange,Value 为空
+                Select(defaultCookie);
+            }
+            else
+            {
+                int cookie;
+                int.TryParse(cookieStr, out cookie);
+                if (GetItem(cookie) == null)
+                {
+                    ini.set("cookie", defaultCookie);
+                    cookie = defaultCookie;
+                }
+                Select(cookie);
+            }
         }
-
+        //手动选择保存时间时：更新 cookie、minutes、重启定时器
         protected override void OnSelChange(int cookie)
         {
-            uint minutes;
-            uint.TryParse(Value, out minutes);
-            recCookie(cookie);
-            updateSaveTime(minutes);
+            IniFile ini = new IniFile("cookie");
+            //updateCookie
+            ini.set("cookie", cookie);
+            ini.set("minutes", Value);
+            startTimer();
         }
         //启动定时保存
-        private void startTimer(uint minutes)
+        public void startTimer()
         {
+            IniFile ini = new IniFile("cookie");
+            uint minutes;
+            uint.TryParse(ini.get("minutes"), out minutes);
+            if (minutes < 1)
+            {
+                minutes = 5;
+                ini.set("minutes", minutes);
+            }
+            App.log("自动保存时间：" + minutes + "分钟");
             if (timer != null)
             {
                 timer.Dispose();
@@ -44,11 +77,17 @@ namespace T04AutoSave
             }
             timer = new System.Threading.Timer(state =>
             {
+                if (ini.get("active") == "0")
+                {
+                    App.log(DateTime.Now, "自动保存未启动");
+                    return;
+                }
                 try
                 {
                     IEditor editor = ArcMap.Application.FindExtensionByName("ESRI Object Editor") as IEditor;
                     if (editor == null) return;
                     IWorkspaceEdit workspaceEdit = editor.EditWorkspace as IWorkspaceEdit;
+                    if (workspaceEdit == null) return;
                     workspaceEdit.StopEditing(true);
                     workspaceEdit.StartEditing(true);
                     App.log(DateTime.Now, "保存成功");
@@ -58,58 +97,6 @@ namespace T04AutoSave
                     App.log(e.Message);
                 }
             }, null, minutes * 60000, minutes * 60000);
-        }
-        //选择保存时间
-        private void updateSaveTime(uint? minutes)
-        {
-            try
-            {
-                string path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\ArcGIS";
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                string ini = path + @"\addin.ini";
-
-                if (minutes == null)
-                {
-                    string str = File.ReadAllText(ini).Trim();
-                    uint minutes2;
-                    uint.TryParse(str, out minutes2);
-                    minutes = minutes2;
-                }
-                if (minutes < 1)
-                {
-                    minutes = 5;
-                }
-                App.log("自动保存时间：" + minutes + "分钟");
-                System.IO.FileStream fsWrite = new System.IO.FileStream(ini, FileMode.Create, FileAccess.Write);
-                byte[] bteData = System.Text.Encoding.UTF8.GetBytes(minutes.ToString());
-                fsWrite.Write(bteData, 0, bteData.Length);
-                fsWrite.Flush();
-                fsWrite.Dispose();
-                startTimer((uint)minutes);
-            }
-            catch (Exception ex)
-            {
-                App.log(ex.Message);
-            }
-        }
-        //cookie
-        private void recCookie(int cookie)
-        {
-            try
-            {
-                string path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\ArcGIS";
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                string ini = path + @"\cookie.ini";
-                System.IO.FileStream fsWrite = new System.IO.FileStream(ini, FileMode.Append, FileAccess.Write);
-                byte[] bteData = System.Text.Encoding.UTF8.GetBytes(cookie + "\r\n");
-                fsWrite.Write(bteData, 0, bteData.Length);
-                fsWrite.Flush();
-                fsWrite.Dispose();
-            }
-            catch (Exception ex)
-            {
-                App.log(ex.Message);
-            }
         }
     }
     class App
@@ -127,6 +114,46 @@ namespace T04AutoSave
                 str += "\t" + item.ToString();
             }
             ArcMap.Application.StatusBar.set_Message(0, str);
+        }
+    }
+    class IniFile
+    {
+        string path = "";
+        public IniFile(string iniFile)
+        {
+            path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\ArcGIS\";
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            path += (iniFile.EndsWith(".ini") ? iniFile : iniFile + ".ini");
+        }
+        [DllImport("kernel32")]
+        private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+        [DllImport("kernel32")]
+        private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
+        public void set(string key, object value, string section = "default")
+        {
+            if (section == "")
+            {
+                section = "default";
+            }
+            long res = WritePrivateProfileString(section, key, value.ToString(), path);
+            if (res == 0)
+            {
+                App.log("ini写入失败");
+            }
+        }
+        public string get(string key, string section = "default")
+        {
+            if (section == "")
+            {
+                section = "default";
+            }
+            StringBuilder temp = new StringBuilder(10);
+            long res = GetPrivateProfileString(section, key, "", temp, 10, path);
+            if (res == 0)
+            {
+                App.log("ini读取失败");
+            }
+            return temp.ToString();
         }
     }
 }
