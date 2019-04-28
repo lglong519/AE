@@ -15,6 +15,9 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.DataSourcesGDB;
 using System.Threading.Tasks;
+using ESRI.ArcGIS.Geoprocessor;
+using ESRI.ArcGIS.DataManagementTools;
+using ESRI.ArcGIS.DataSourcesFile;
 
 namespace p_statistics
 {
@@ -48,7 +51,7 @@ namespace p_statistics
             ToolTip t = new ToolTip();
             t.SetToolTip(button6, "Save");
             t.InitialDelay = 0;
-            button6.MouseEnter += new EventHandler((object sender, EventArgs e) => { t.ShowAlways=true; });
+            button6.MouseEnter += new EventHandler((object sender, EventArgs e) => { t.ShowAlways = true; });
         }
         // 地图绘制完成后更新下拉图层列表
         private void axMapControl1_OnAfterScreenDraw(object sender, IMapControlEvents2_OnAfterScreenDrawEvent e)
@@ -497,7 +500,7 @@ namespace p_statistics
                 center.PutCoords((shape as IArea).Centroid.X, (shape as IArea).Centroid.Y);
                 axMapControl1.CenterAt(center);
                 //让地图显示窗口立刻重新绘制，更新显示,避免先闪烁后缩放
-                axMapControl1.ActiveView.ScreenDisplay.UpdateWindow(); 
+                axMapControl1.ActiveView.ScreenDisplay.UpdateWindow();
                 axMapControl1.FlashShape(shape, 2, 100, symbol);
             }
             else
@@ -539,6 +542,56 @@ namespace p_statistics
                 pMapDocument.Save(pMapDocument.UsesRelativePaths, true);
                 pMapDocument.Close();
                 MessageBox.Show("保存文档成功");
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                for (int i = 0; i < axMapControl1.Map.LayerCount; i++)
+                {
+                    IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(i) as IFeatureLayer;
+                    if (featureLayer != null && featureLayer.Visible)
+                    {
+                        IFeatureClass featureClass = featureLayer.FeatureClass;
+                        int index = featureClass.FindField("shapeName");
+                        if (index < 0)
+                        {
+                            IField field = new FieldClass();
+                            IFieldEdit fieldEdit = field as IFieldEdit;
+                            fieldEdit.Name_2 = "shapeName";
+                            fieldEdit.AliasName_2 = "文件名";
+                            fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                            fieldEdit.Length_2 = 50;
+                            featureClass.AddField(field);
+                            index = featureClass.FindField("shapeName");
+                        }
+                        IFeatureCursor featureCursor = featureClass.Search(null, false);
+                        IFeature feature = featureCursor.NextFeature();
+                        while (feature != null)
+                        {
+                            if (feature.get_Value(index).ToString()!=featureLayer.Name){
+                                feature.set_Value(index, featureLayer.Name);
+                                feature.Store();
+                            }
+                            feature = featureCursor.NextFeature();
+                        }
+                    }
+                }
+                MessageBox.Show("完成");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                if (ex.Message.Contains("HRESULT E_FAIL"))
+                {
+                    MessageBox.Show("图层可能被占用");
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 

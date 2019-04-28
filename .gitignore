@@ -4,3 +4,5 @@
 obj/
 *.suo
 *.lock
+desktop.ini
+CurrentSettings.vssettings
