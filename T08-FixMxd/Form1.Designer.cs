@@ -1,0 +1,154 @@
+﻿namespace T08_FixMxd
+{
+    partial class Form1
+    {
+        /// <summary>
+        /// 必需的设计器变量。
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// 清理所有正在使用的资源。
+        /// </summary>
+        /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows 窗体设计器生成的代码
+
+        /// <summary>
+        /// 设计器支持所需的方法 - 不要
+        /// 使用代码编辑器修改此方法的内容。
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new DevExpress.XtraEditors.SimpleButton();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.axToolbarControl1 = new ESRI.ArcGIS.Controls.AxToolbarControl();
+            this.axTOCControl1 = new ESRI.ArcGIS.Controls.AxTOCControl();
+            this.axMapControl1 = new ESRI.ArcGIS.Controls.AxMapControl();
+            this.flowLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axTOCControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.comboBox1);
+            this.flowLayoutPanel1.Controls.Add(this.button1);
+            this.flowLayoutPanel1.Controls.Add(this.button2);
+            this.flowLayoutPanel1.Controls.Add(this.comboBox2);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(470, 34);
+            this.flowLayoutPanel1.TabIndex = 0;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(3, 3);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(113, 20);
+            this.comboBox1.TabIndex = 1;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(122, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(60, 25);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(188, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(76, 25);
+            this.button2.TabIndex = 2;
+            this.button2.Text = "FixMxd";
+            this.button2.Click += new System.EventHandler(this.simpleButton1_Click);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(270, 3);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(175, 20);
+            this.comboBox2.TabIndex = 3;
+            // 
+            // axToolbarControl1
+            // 
+            this.axToolbarControl1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.axToolbarControl1.Location = new System.Drawing.Point(0, 34);
+            this.axToolbarControl1.Name = "axToolbarControl1";
+            this.axToolbarControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axToolbarControl1.OcxState")));
+            this.axToolbarControl1.Size = new System.Drawing.Size(470, 28);
+            this.axToolbarControl1.TabIndex = 1;
+            // 
+            // axTOCControl1
+            // 
+            this.axTOCControl1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.axTOCControl1.Location = new System.Drawing.Point(0, 62);
+            this.axTOCControl1.Name = "axTOCControl1";
+            this.axTOCControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axTOCControl1.OcxState")));
+            this.axTOCControl1.Size = new System.Drawing.Size(134, 230);
+            this.axTOCControl1.TabIndex = 2;
+            // 
+            // axMapControl1
+            // 
+            this.axMapControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.axMapControl1.Location = new System.Drawing.Point(134, 62);
+            this.axMapControl1.Name = "axMapControl1";
+            this.axMapControl1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axMapControl1.OcxState")));
+            this.axMapControl1.Size = new System.Drawing.Size(336, 230);
+            this.axMapControl1.TabIndex = 3;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(470, 292);
+            this.Controls.Add(this.axMapControl1);
+            this.Controls.Add(this.axTOCControl1);
+            this.Controls.Add(this.axToolbarControl1);
+            this.Controls.Add(this.flowLayoutPanel1);
+            this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Form1";
+            this.TopMost = true;
+            this.flowLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axTOCControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).EndInit();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button button1;
+        private ESRI.ArcGIS.Controls.AxToolbarControl axToolbarControl1;
+        private ESRI.ArcGIS.Controls.AxTOCControl axTOCControl1;
+        private ESRI.ArcGIS.Controls.AxMapControl axMapControl1;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private DevExpress.XtraEditors.SimpleButton button2;
+        private System.Windows.Forms.ComboBox comboBox2;
+
+    }
+}
+
