@@ -33,6 +33,7 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button7 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.axMapControl1 = new ESRI.ArcGIS.Controls.AxMapControl();
@@ -75,6 +76,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.button7);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
@@ -82,6 +84,16 @@
             this.groupBox1.Size = new System.Drawing.Size(507, 38);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(109, 14);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(72, 16);
+            this.checkBox1.TabIndex = 17;
+            this.checkBox1.Text = "批量设置";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // button7
             // 
@@ -152,6 +164,7 @@
             this.Name = "Form1";
             this.Text = "statistics";
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axMapControl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axTOCControl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axToolbarControl1)).EndInit();
@@ -170,6 +183,7 @@
         private System.Windows.Forms.Button button6;
         private ESRI.ArcGIS.Controls.AxMapControl axMapControl1;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.CheckBox checkBox1;
 
     }
 }

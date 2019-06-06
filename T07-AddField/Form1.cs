@@ -1,23 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Threading;
 using ESRI.ArcGIS.Controls;
 using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geodatabase;
-using ESRI.ArcGIS.Geometry;
-using ESRI.ArcGIS.Display;
-using ESRI.ArcGIS.DataSourcesGDB;
-using System.Threading.Tasks;
-using ESRI.ArcGIS.Geoprocessor;
-using ESRI.ArcGIS.DataManagementTools;
-using ESRI.ArcGIS.DataSourcesFile;
 
 namespace p_statistics
 {
@@ -93,7 +78,7 @@ namespace p_statistics
                 }
             }
         }
-       
+
         private bool checkLayerCount()
         {
             if (axMapControl1.LayerCount < 1)
@@ -103,7 +88,7 @@ namespace p_statistics
             }
             return true;
         }
-        
+
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -144,44 +129,30 @@ namespace p_statistics
 
         private void button7_Click(object sender, EventArgs e)
         {
+            if (!checkLayerCount()) return;
+            if (checkBox1.Checked)
+            {
+                for (int i = 0; i < axMapControl1.Map.LayerCount; i++)
+                {
+                    processOneLayer(i);
+                }
+            }
+            else
+            {
+                if (comboBox1.SelectedIndex == -1) return;
+                processOneLayer(comboBox1.SelectedIndex);
+            }
+            MessageBox.Show("完成");
+        }
+        private bool processOneLayer(int layerIndex)
+        {
+            IMap map = axMapControl1.Map;
+            IFeatureLayer featureLayer = map.get_Layer(layerIndex) as IFeatureLayer;
+            if (featureLayer == null) return false;
+            IFeatureClass featureClass = featureLayer.FeatureClass;
+            if (featureClass == null) return false;
             try
             {
-                //for (int i = 0; i < axMapControl1.Map.LayerCount; i++)
-                //{
-                //    IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(i) as IFeatureLayer;
-                //    if (featureLayer != null && featureLayer.Visible)
-                //    {
-                //        IFeatureClass featureClass = featureLayer.FeatureClass;
-                //        int index = featureClass.FindField("shapeName");
-                //        if (index < 0)
-                //        {
-                //            IField field = new FieldClass();
-                //            IFieldEdit fieldEdit = field as IFieldEdit;
-                //            fieldEdit.Name_2 = "shapeName";
-                //            fieldEdit.AliasName_2 = "文件名";
-                //            fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-                //            fieldEdit.Length_2 = 50;
-                //            featureClass.AddField(field);
-                //            index = featureClass.FindField("shapeName");
-                //        }
-                //        IFeatureCursor featureCursor = featureClass.Search(null, false);
-                //        IFeature feature = featureCursor.NextFeature();
-                //        while (feature != null)
-                //        {
-                //            if (feature.get_Value(index).ToString()!=featureLayer.Name){
-                //                feature.set_Value(index, featureLayer.Name);
-                //                feature.Store();
-                //            }
-                //            feature = featureCursor.NextFeature();
-                //        }
-                //    }
-                //}
-                //MessageBox.Show("完成");
-
-                if (!checkLayerCount()) return;
-                IMap map = axMapControl1.Map;
-                IFeatureLayer featureLayer = map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
-                IFeatureClass featureClass = featureLayer.FeatureClass;
                 string fieldName = "shapeName";
                 int index = featureClass.FindField(fieldName);
                 if (index < 0)
@@ -198,28 +169,21 @@ namespace p_statistics
                 }
 
                 IQueryFilter pFilter = new QueryFilterClass();
-                pFilter.WhereClause = String.Format("{0}<>'{1}'", fieldName, featureLayer.Name);
+                pFilter.WhereClause = String.Format("{0} is null OR {0}<>'{1}'", fieldName, featureLayer.Name);
                 pFilter.SubFields = fieldName;
                 ITable pTable = featureClass as ITable;
                 IRowBuffer pBuffer = pTable.CreateRowBuffer();
                 pBuffer.set_Value(index, featureLayer.Name);
                 pTable.UpdateSearchedRows(pFilter, pBuffer);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(pFilter);
-                MessageBox.Show("完成");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                if (ex.Message.Contains("HRESULT E_FAIL"))
-                {
-                    MessageBox.Show("图层可能被占用");
-                }
-                else
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                string res = string.Format("[{0}]设置失败，错误信息：{1}", featureLayer.Name, ex.Message);
+                MessageBox.Show(res);
+                return false;
             }
+            return true;
         }
-
     }
 }
