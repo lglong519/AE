@@ -20,13 +20,21 @@ namespace T10_SpatialQuery
             ESRI.ArcGIS.RuntimeManager.BindLicense(ESRI.ArcGIS.ProductCode.Engine);
             InitializeComponent();
         }
-
+        private IMap map
+        {
+            get
+            {
+                //return ArcMap.Document.FocusMap;
+                return axMapControl1.Map;
+            }
+        }
         private void button1_Click(object sender, EventArgs e)
         {
-            IFeatureLayer targetFeatureLayer = axMapControl1.Map.get_Layer(0) as IFeatureLayer;
+
+            IFeatureLayer targetFeatureLayer = map.get_Layer(0) as IFeatureLayer;
             IFeatureClass targetFeatureClass = targetFeatureLayer.FeatureClass;
             //source
-            IFeatureLayer sourceFeatureLayer = axMapControl1.Map.get_Layer(1) as IFeatureLayer;
+            IFeatureLayer sourceFeatureLayer = map.get_Layer(1) as IFeatureLayer;
             IFeatureClass sourceFeatureClass = sourceFeatureLayer.FeatureClass;
             IFeatureCursor sourceFeatureCursor = sourceFeatureClass.Search(null, false);
             IFeature sourceFeature = sourceFeatureCursor.NextFeature();
@@ -39,7 +47,7 @@ namespace T10_SpatialQuery
                     SpatialRel = esriSpatialRelEnum.esriSpatialRelIntersects,   //相交
                     GeometryField = sourceFeatureClass.ShapeFieldName
                 };
-                if (targetFeatureClass.FeatureCount(spatialFilter)<1)
+                if (targetFeatureClass.FeatureCount(spatialFilter) < 1)
                 {
                     sourceFeature = sourceFeatureCursor.NextFeature();
                     continue;
@@ -61,12 +69,49 @@ namespace T10_SpatialQuery
                 // 本底面积
                 IArea sourceArea = sourceFeature.Shape as IArea;
                 //MessageBox.Show("面积比：" + intersectionArea.Area / sourceArea.Area);
-                if (intersectionArea.Area / sourceArea.Area>1)
+                if (intersectionArea.Area / sourceArea.Area >= .5)
                 {
                     Console.WriteLine("面积比");
                     Console.WriteLine(intersectionArea.Area / sourceArea.Area);
                     Console.WriteLine(sourceFeature.OID);
+                    //sourceFeature.set_Value();
                 }
+                else
+                {
+
+                }
+                sourceFeature = sourceFeatureCursor.NextFeature();
+            }
+        }
+
+        JBNTRatio jbntRatio;
+        private void button2_Click(object sender0, EventArgs e0)
+        {
+            if (jbntRatio == null)
+            {
+                jbntRatio = new JBNTRatio(axMapControl1.Map);
+                jbntRatio.Disposed += new EventHandler((object sender, EventArgs e) =>
+                {
+                    jbntRatio = null;
+                });
+            }
+            if (jbntRatio.Visible != true)
+            {
+                jbntRatio.Show();
+            }
+            jbntRatio.Focus();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            IFeatureLayer sourceFeatureLayer = map.get_Layer(0) as IFeatureLayer;
+            IFeatureClass sourceFeatureClass = sourceFeatureLayer.FeatureClass;
+            IFeatureCursor sourceFeatureCursor = sourceFeatureClass.Search(null, false);
+            IFeature sourceFeature = sourceFeatureCursor.NextFeature();
+            while (sourceFeature != null)
+            {
+                IField f = sourceFeature.Fields.Field[1];
+                Console.Write(sourceFeature.OID.ToString() + ",");
                 sourceFeature = sourceFeatureCursor.NextFeature();
             }
         }
