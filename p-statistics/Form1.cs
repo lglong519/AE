@@ -349,7 +349,7 @@ namespace p_statistics
                 //{
                 //    throw new Exception("Field: angle not found");
                 //}
-
+                //calcPointCount(featureClass);
                 IFeatureCursor featureCursor = featureClass.Search(null, false);
                 IFeature feature = featureCursor.NextFeature();
                 DateTime now = DateTime.Now;
@@ -361,11 +361,15 @@ namespace p_statistics
                     //MessageBox.Show(featureClass.FindField("angle").ToString());
 
                     //ThreadPool.QueueUserWorkItem(state => calcAllAngles(feature));
+                    //new Thread(o =>
+                    //{
+                    //calcAllAngles(feature);
+                    //progressBar1.Value = (int)Math.Ceiling(c++ / count * 100.0);
+                    //}).Start();
                     calcAllAngles(feature);
 
                     //feature.set_Value(angIndex, calcAllAngles(feature));
                     //feature.Store();
-                    progressBar1.Value = (int)Math.Ceiling(c++ / count * 100.0);
                     //MessageBox.Show(progressBar1.Value.ToString());
                     //this.Refresh();
                     //System.Threading.Thread.Sleep(1200);
@@ -377,9 +381,9 @@ namespace p_statistics
                 */
                 double sc = (DateTime.Now - now).TotalSeconds;
                 axMapControl1.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
-                //MessageBox.Show(sc + "--Seconds\ncount: " + c);
-                MessageBox.Show("完成");
-                progressBar1.Visible = false;
+                MessageBox.Show(sc + "--Seconds\ncount: " + c);
+                //MessageBox.Show("完成");
+                //progressBar1.Visible = false;
             }
             catch (Exception ex)
             {
@@ -456,6 +460,7 @@ namespace p_statistics
         }
         private double getAngle(IPoint center, IPoint first, IPoint last)
         {
+            //Console.WriteLine(center.ID);
             double c2 = Math.Pow(first.X - last.X, 2) + Math.Pow(first.Y - last.Y, 2);
             double f2 = Math.Pow(center.X - last.X, 2) + Math.Pow(center.Y - last.Y, 2);
             double l2 = Math.Pow(first.X - center.X, 2) + Math.Pow(first.Y - center.Y, 2);
@@ -477,6 +482,7 @@ namespace p_statistics
             axTOCControl1.Update();
             axTOCControl1.Refresh();
             axMapControl1.ActiveView.Refresh();
+            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -571,7 +577,8 @@ namespace p_statistics
                         IFeature feature = featureCursor.NextFeature();
                         while (feature != null)
                         {
-                            if (feature.get_Value(index).ToString()!=featureLayer.Name){
+                            if (feature.get_Value(index).ToString() != featureLayer.Name)
+                            {
                                 feature.set_Value(index, featureLayer.Name);
                                 feature.Store();
                             }
@@ -595,5 +602,204 @@ namespace p_statistics
             }
         }
 
+        private void button8_Click(object sender, EventArgs e)
+        {
+            //Console.WriteLine(axMapControl1.DocumentMap);
+            //Console.WriteLine(axMapControl1.Map.Name);
+            ILayer layer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex);
+            IDataLayer2 pDataLayer = layer as IDataLayer2;
+            IDatasetName datasetName = pDataLayer.DataSourceName as IDatasetName;
+            string pathName = datasetName.WorkspaceName.PathName;
+            if (layer is IFeatureLayer)
+            {
+                //获得图层要素
+                IFeatureLayer featureLayer = layer as IFeatureLayer;
+                Console.WriteLine("IFeatureLayer: " + featureLayer.Name);
+
+            }
+            if (layer is IGroupLayer)
+            {
+                Console.WriteLine("IGroupLayer: " + layer.Name);
+                //遍历图层组
+                ICompositeLayer compositeLayer = layer as ICompositeLayer;
+                for (int j = 0; j < compositeLayer.Count; j++)
+                {
+                    if (compositeLayer.get_Layer(j) is IFeatureLayer)
+                    {
+                        IFeatureLayer featureLayer = compositeLayer.get_Layer(j) as IFeatureLayer;
+                        Console.WriteLine("SubFeatureLayer: " + featureLayer.Name);
+                    }
+                }
+            }
+
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            DateTime now = DateTime.Now;
+            ILayer layer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex);
+            IFeatureLayer featureLayer = layer as IFeatureLayer;
+            IFeatureClass featureClass = featureLayer.FeatureClass;
+            IPointCollection pointCollection = new PolygonClass();
+            IFeatureCursor featureCursor = featureClass.Search(null, false);
+            IFeature feature = featureCursor.NextFeature();
+            int count = 0;
+            while (feature != null)
+            {
+                if (feature.ShapeCopy != null)
+                {
+                    count += (feature.ShapeCopy as IPointCollection).PointCount;
+                }
+                feature = featureCursor.NextFeature();
+            }
+            TimeSpan span = DateTime.Now - now;
+            MessageBox.Show(count + ":" + span.TotalSeconds);
+        }
+        public int calcPointCount(IFeatureClass featureClass)
+        {
+            IPointCollection pointCollection = new PolygonClass();
+            IFeatureCursor featureCursor = featureClass.Search(null, false);
+            IFeature feature = featureCursor.NextFeature();
+            int count = 0;
+            while (feature != null)
+            {
+                if (feature.ShapeCopy != null)
+                {
+                    count += (feature.ShapeCopy as IPointCollection).PointCount;
+                }
+                feature = featureCursor.NextFeature();
+            }
+            MessageBox.Show("count:" + count);
+            return count;
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            if (!checkLayerCount()) return;
+            double deg;
+            if (!double.TryParse(comboBox3.Text.Trim(), out deg))
+            {
+                MessageBox.Show("invalid angle");
+                return;
+            };
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IFeatureClass featureClass = featureLayer.FeatureClass;
+            if (featureClass.ShapeType != esriGeometryType.esriGeometryPolygon)
+            {
+                return;
+            }
+            IGraphicsContainer pGC = axMapControl1.ActiveView.FocusMap as IGraphicsContainer;
+            pGC.DeleteAllElements();
+            //int angIndex = featureClass.FindField("angle");
+            try
+            {
+                ITable pTable = featureClass as ITable;
+                ICursor pCursor = pTable.Update(null, false);
+                IRow pRow = pCursor.NextRow();
+
+                DateTime now = DateTime.Now;
+                progressBar1.Visible = true;
+                while (pRow != null)
+                {
+                    calcAllAngles(pRow as IFeature);
+                    pRow = pCursor.NextRow();
+                }
+
+                double sc = (DateTime.Now - now).TotalSeconds;
+                axMapControl1.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+                MessageBox.Show(sc + "--Seconds");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if (ex.Message.Contains("schema lock"))
+                {
+                    MessageBox.Show("图层被占用");
+                }
+            }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(textBox1.Text))
+            {
+                MessageBox.Show("值不能为空");
+                return;
+            }
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IFeatureClass featureClass = featureLayer.FeatureClass;
+            IFeatureCursor featureCursor = featureClass.Search(null, false);
+            IFeature feature = featureCursor.NextFeature();
+            if (feature != null)
+            {
+                //IAffineTransformation2D transform = feature.Shape as IAffineTransformation2D;
+                ITransform2D transform = feature.Shape as ITransform2D;
+                IArea area = feature.Shape as IArea;
+                IPoint point = (area).Centroid;
+                double minus = double.Parse(textBox1.Text);
+                double value = Math.Sqrt((area.Area - minus) / area.Area);
+                transform.Scale(point, value, value);
+                IFeatureBuffer featureBuffer = featureClass.CreateFeatureBuffer();
+                featureBuffer.Shape = transform as IGeometry;
+                IFeatureCursor cursor = featureLayer.FeatureClass.Insert(true);
+                cursor.InsertFeature(featureBuffer);
+                cursor.Flush();
+            }
+            MessageBox.Show("完成");
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IFeatureClass featureClass = featureLayer.FeatureClass;
+            IFeatureCursor featureCursor = featureClass.Search(null, false);
+            IFeature feature = featureCursor.NextFeature();
+            while (feature != null)
+            {
+                feature.set_Value(feature.Fields.FieldCount - 1, (feature.Shape as IArea).Area);
+                //featureCursor.UpdateFeature(feature);
+                feature.Store();
+                feature = featureCursor.NextFeature();
+            }
+            MessageBox.Show("完成");
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IFeatureClass featureClass = featureLayer.FeatureClass;
+            IFeatureCursor featureCursor = featureClass.Search(null, false);
+            IFeature feature = featureCursor.NextFeature();
+            int n = 0;
+            while (feature != null)
+            {
+                if (n++ == 0)
+                { }
+                else
+                {
+                    feature.Delete();
+                }
+                feature = featureCursor.NextFeature();
+            }
+            MessageBox.Show("完成");
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
+            IFeatureClass featureClass = featureLayer.FeatureClass;
+            IFeatureCursor featureCursor = featureClass.Search(null, false);
+            IFeature feature = featureCursor.NextFeature();
+            int n = 0;
+            while (feature != null)
+            {
+                if (feature.Shape == null)
+                {
+                    feature.Delete();
+                }
+                feature = featureCursor.NextFeature();
+            }
+            MessageBox.Show("完成");
+        }
     }
 }

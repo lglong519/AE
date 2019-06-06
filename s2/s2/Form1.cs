@@ -196,6 +196,8 @@ namespace s2
         private void addLayerFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog() { Title = "打开图层文件", Filter = "map documents(*.lyr)|*.lyr" };
+            openFileDialog.InitialDirectory = @"Program Files";
+            openFileDialog.Multiselect = false;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string filePath = openFileDialog.FileName;
@@ -465,6 +467,21 @@ namespace s2
         private void 点选查询ToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+           IFeatureLayer layer= axMapControl1.Map.get_Layer(0) as IFeatureLayer;
+           IFeatureClass fClass = layer.FeatureClass;
+           IFeatureCursor cursor= fClass.Search(null,false);
+           IFeature feature = cursor.NextFeature();
+            if(feature!=null){
+                for (int i = 0; i < feature.Fields.FieldCount; i++)
+                {
+                    IField field = feature.Fields.get_Field(i);
+                    Console.WriteLine(field.Type);
+                }
+            }
         }
 
     }

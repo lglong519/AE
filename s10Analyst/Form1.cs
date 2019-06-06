@@ -304,7 +304,7 @@ namespace s10Analyst
                 env.YMax = env.YMax - height / 3;
                 IGeometry geometry = new PolygonClass();
                 topo.QueryClipped(env, geometry);
-                ISymbol symbol = GetSimpleFillSymbol(100,255);
+                ISymbol symbol = GetSimpleFillSymbol(100, 255);
 
                 screenDisplay.StartDrawing(screenDisplay.hDC, (short)esriScreenCache.esriNoScreenCache);
                 screenDisplay.SetSymbol(symbol);
@@ -329,14 +329,14 @@ namespace s10Analyst
             IFeatureClass featureClass = featureLayer.FeatureClass;
             for (int i = 0; i < featureClass.FeatureCount(null); i++)
             {
-                geometryCollection.AddGeometry(featureClass.GetFeature(i).Shape,Type.Missing,Type.Missing);
+                geometryCollection.AddGeometry(featureClass.GetFeature(i).Shape, Type.Missing, Type.Missing);
             }
             IPolygon polygon = new PolygonClass();
             ITopologicalOperator topo = polygon as ITopologicalOperator;
             topo.ConstructUnion(geometryCollection as IEnumGeometry);
 
-            ISymbol symbol = GetSimpleFillSymbol(200,200);
-            screenDisplay.StartDrawing(screenDisplay.hDC,(short)esriScreenCache.esriNoScreenCache);
+            ISymbol symbol = GetSimpleFillSymbol(200, 200);
+            screenDisplay.StartDrawing(screenDisplay.hDC, (short)esriScreenCache.esriNoScreenCache);
             screenDisplay.SetSymbol(symbol);
             screenDisplay.DrawPolygon(polygon);
             screenDisplay.FinishDrawing();
@@ -352,11 +352,11 @@ namespace s10Analyst
             if (!checkLayerCount()) return;
             IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
             ITopologicalOperator topo = featureLayer.FeatureClass.GetFeature(0).Shape as ITopologicalOperator;
-            IGeometry geometry= topo.ConvexHull();
+            IGeometry geometry = topo.ConvexHull();
 
             IScreenDisplay screenDisplay = axMapControl1.ActiveView.ScreenDisplay;
             ISymbol symbol = GetSimpleLineSymbol();
-            screenDisplay.StartDrawing(screenDisplay.hDC,(short)esriScreenCache.esriNoScreenCache);
+            screenDisplay.StartDrawing(screenDisplay.hDC, (short)esriScreenCache.esriNoScreenCache);
             screenDisplay.SetSymbol(symbol);
             screenDisplay.DrawPolyline(geometry);
             screenDisplay.FinishDrawing();
@@ -373,7 +373,8 @@ namespace s10Analyst
         {
             if (!checkLayerCount()) return;
             IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
-            ITopologicalOperator topo = featureLayer.FeatureClass.GetFeature(0).Shape as ITopologicalOperator;
+            IFeature pfeature = featureLayer.FeatureClass.GetFeature(0);
+            ITopologicalOperator topo = pfeature.Shape as ITopologicalOperator;
 
             IEnvelope env = featureLayer.FeatureClass.GetFeature(0).Shape.Envelope;
             IPolyline polyline = new PolylineClass();
@@ -381,21 +382,74 @@ namespace s10Analyst
             IPoint toPoint = new PointClass();
             //IGeometry leftPolygon = new PolygonClass();
             //IGeometry rightPolygon = new PolygonClass();
+            double x = div(pfeature.Shape, 500, env.XMin, env.XMax);
+
             IGeometry leftPolygon, rightPolygon;
-            fromPoint.PutCoords(env.XMin, env.YMin);
-            toPoint.PutCoords(env.XMax, env.YMax);
+            fromPoint.PutCoords(x, env.YMin);
+            toPoint.PutCoords(x, env.YMax);
             polyline.FromPoint = fromPoint;
             polyline.ToPoint = toPoint;
 
             topo.Cut(polyline, out leftPolygon, out rightPolygon);
-
             ISymbol symbol = GetSimpleFillSymbol(200, 200);
             IScreenDisplay screenDisplay = axMapControl1.ActiveView.ScreenDisplay;
             screenDisplay.StartDrawing(screenDisplay.hDC, (short)esriScreenCache.esriNoScreenCache);
             screenDisplay.SetSymbol(symbol);
+
+
+            IDataset dataset = (IDataset)featureLayer.FeatureClass;
+            IWorkspace workspace = dataset.Workspace;
+            IWorkspaceEdit workspaceEdit = (IWorkspaceEdit)workspace;
+            //开启编辑
+            workspaceEdit.StartEditing(true);
+            workspaceEdit.StartEditOperation();
+
+            IFeatureBuffer feature = featureLayer.FeatureClass.CreateFeatureBuffer();
+            feature.Shape = leftPolygon;
+            IFeatureCursor cursor = featureLayer.FeatureClass.Insert(true);
+            cursor.InsertFeature(feature);
+            feature = featureLayer.FeatureClass.CreateFeatureBuffer();
+            feature.Shape = rightPolygon;
+            cursor.InsertFeature(feature);
+
+            cursor.Flush();
+            workspaceEdit.StopEditOperation();
+            workspaceEdit.StopEditing(true);
+
             screenDisplay.DrawPolygon(leftPolygon);
             screenDisplay.DrawPolygon(rightPolygon);
             screenDisplay.FinishDrawing();
+        }
+        private double div(IGeometry shape, double area, double XMin, double XMax)
+        {
+            IEnvelope env = shape.Envelope;
+            double y1 = env.YMin;
+            double y2 = env.YMax;
+            double width = (XMax - XMin) / 2;
+            double x = width + XMin;
+            IPoint fromPoint = new PointClass() { X = x, Y = y1 };
+            IPoint toPoint = new PointClass() { X = x, Y = y2 };
+            IPolyline polyline = new PolylineClass() { FromPoint = fromPoint, ToPoint = toPoint };
+            IGeometry leftPolygon, rightPolygon;
+            ITopologicalOperator topo = shape as ITopologicalOperator;
+            topo.Cut(polyline, out leftPolygon, out rightPolygon);
+            double left = Math.Round((leftPolygon as IArea).Area, 2);
+            double right = Math.Round((rightPolygon as IArea).Area, 2);
+            Console.WriteLine("left:" + left);
+            Console.WriteLine("right:" + right);
+                        
+            if (left == area)
+            {
+                return x;
+            }
+            if (left > area)
+            {
+                return div(shape, area, XMin, x);
+            }
+            else
+            {
+                return div(shape, area, x, XMax);
+            }
         }
         // Difference
         /*
@@ -515,7 +569,7 @@ namespace s10Analyst
             IGeometry geometry1 = lineLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
 
             IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
-            bool isCross=relationalOperator.Crosses(geometry1);
+            bool isCross = relationalOperator.Crosses(geometry1);
 
             drawAB(geometry0);
             if (isCross)
@@ -536,7 +590,7 @@ namespace s10Analyst
             IGeometry geometry1 = featureLayer.FeatureClass.GetFeature(1).Shape as IGeometry;
 
             IRelationalOperator relationalOperator = geometry0 as IRelationalOperator;
-            bool isEqual=relationalOperator.Equals(geometry1);
+            bool isEqual = relationalOperator.Equals(geometry1);
             MessageBox.Show(isEqual ? "A Equals B" : "A dosn't Equals B");
         }
         // 4.Touch
@@ -593,8 +647,8 @@ namespace s10Analyst
             if (!checkLayerCount()) return;
             IFeatureLayer featureLayer = axMapControl1.Map.get_Layer(comboBox1.SelectedIndex) as IFeatureLayer;
             IGeometry geometry0 = featureLayer.FeatureClass.GetFeature(0).Shape as IGeometry;
-            IFeature feature=getSelected();
-            if (feature==null)
+            IFeature feature = getSelected();
+            if (feature == null)
             {
                 MessageBox.Show("empty selection");
                 return;
@@ -610,18 +664,18 @@ namespace s10Analyst
         // 获取选中要素
         private IFeature getSelected()
         {
-            if (axMapControl1.Map.SelectionCount<1)
+            if (axMapControl1.Map.SelectionCount < 1)
             {
                 return null;
             }
-            ISelection selection= axMapControl1.Map.FeatureSelection;
+            ISelection selection = axMapControl1.Map.FeatureSelection;
             IEnumFeatureSetup enumFeatureSetup = selection as IEnumFeatureSetup;
             enumFeatureSetup.AllFields = true;
             IEnumFeature enumFeature = enumFeatureSetup as IEnumFeature;
             enumFeature.Reset();
             return enumFeature.Next();
         }
-        private void drawAB(IGeometry a,IGeometry b=null)
+        private void drawAB(IGeometry a, IGeometry b = null)
         {
             ISymbol symbol = GetSimpleFillSymbol(200, 200);
             ISymbol symbo2 = GetSimpleFillSymbol(100, 255);
@@ -631,7 +685,7 @@ namespace s10Analyst
             screenDisplay.SetSymbol(symbol);
             screenDisplay.DrawPolygon(a);
 
-            if (b!=null)
+            if (b != null)
             {
                 screenDisplay.SetSymbol(symbo2);
                 screenDisplay.DrawPolygon(b);

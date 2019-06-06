@@ -34,6 +34,10 @@ namespace s7WorkspaceFactory
         {
             // 1.启动一个工作空间工厂
             IWorkspaceFactory workspaceFactory = new AccessWorkspaceFactoryClass();
+			if(!workspaceFactory.IsWorkspace(path)){
+				MessageBox.Show("不是Access类型工作空间");
+				return;
+			}
             // 2.用工作空间工厂打开数据库、SDE数据库、SHP文件的路径
             // 返回的是工作空间(IWorkspace)的继承接口(IFeatureWorkspace)的实例，也继承了 IWorkspaceEdit
             IFeatureWorkspace featureWorkspace = workspaceFactory.OpenFromFile(@"C:\Users\Administrator\Documents\Visual Studio 2010\Projects\data\test\test.mdb", 0) as IFeatureWorkspace;
