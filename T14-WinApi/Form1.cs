@@ -27,6 +27,8 @@ namespace T14_WinApi
         MouseHook mh;
         KeyboardHook k_hook;
         List<Axis> linePoints = new List<Axis>();
+        bool isShowingDialog = false;
+        bool isConnected = false;
 
         private void init()
         {
@@ -44,6 +46,7 @@ namespace T14_WinApi
             k_hook.KeyPressEvent += K_hook_KeyPressEvent;
             k_hook.Start();
             nextClipboardViewer = (IntPtr)SetClipboardViewer((int)Handle);
+            radioPoint.Checked = true;
         }
         private void mh_MouseDownEvent(object sender, MouseEventArgs e)
         {
@@ -66,7 +69,8 @@ namespace T14_WinApi
             if (e.Button == MouseButtons.Left)
             {
                 //richTextBox1.AppendText("松开了左键\n");
-                if (LeftTag && value == 0)
+                label2.Text = "null";
+                if (LeftTag && value <= 3)
                 {
                     new System.Threading.Timer((a) =>
                     {
@@ -76,10 +80,23 @@ namespace T14_WinApi
                         }
                         catch (Exception ex)
                         {
+                            if (isShowingDialog || !isConnected)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                isShowingDialog = true;
+                            }
                             MessageBox.Show(ex.Message);
+                            isShowingDialog = false;
                         }
                     }, null, 100, 0);
-                    label1.Text = (String.Format("[{0},{1}]", e.Location.X, e.Location.Y));
+                    //label1.Text = (String.Format("[{0},{1}]", e.Location.X, e.Location.Y));
+                }
+                else
+                {
+                    Console.WriteLine("move: " + value);
                 }
             }
 
@@ -103,7 +120,7 @@ namespace T14_WinApi
         private const int BM_CLICK = 0xF5;
         private void copyMessage()
         {
-            IntPtr mwh = Win32Api.FindMainWindowHandle(null, "Measurements", 100, 10);
+            IntPtr mwh = Win32Api.FindMainWindowHandle(null, "Measurements", 100, 1);
             if (mwh != IntPtr.Zero)
             {
                 Point screenPoint = Control.MousePosition;
@@ -113,9 +130,9 @@ namespace T14_WinApi
                 IntPtr mwhMain = Win32Api.GetParent(mwh);
                 Win32Api.RECT rectMain = new Win32Api.RECT();
                 Win32Api.GetWindowRect(mwhMain, ref rectMain);
-                Console.WriteLine("{0},{1},{2},{3},{4},{5}", x, y, rectMain.Left, rectMain.Left, rectMain.Top, rectMain.Bottom);
-                if (x < rectMain.Left || x > rectMain.Right || y < rectMain.Top || y > rectMain.Bottom)
+                if (x < rectMain.Left || x > rectMain.Right || y < rectMain.Top + 90 || y > rectMain.Bottom)
                 {
+                    Console.WriteLine("{0}:[{2},{3}];{1}:[{4},{5}]", x, y, rectMain.Left, rectMain.Right, rectMain.Top, rectMain.Bottom);
                     return;
                 }
 
@@ -125,13 +142,7 @@ namespace T14_WinApi
                 Win32Api.SetActiveWindow(mwh);
                 bool fore = Win32Api.SetForegroundWindow(mwh);
 
-                //Win32Api.SetCursorPos((rect.Right + rect.Left) / 2, (rect.Bottom + rect.Top) / 2); //设置鼠标位置
-                //Win32Api.mouse_event(0x0002, 0, 0, 0, 0); //鼠标按下
-                //Win32Api.mouse_event(0x0004, 0, 0, 0, 0);//鼠标松开
-
-                //Win32Api.SetCursorPos(x, y);
-
-                //Clipboard.Clear();
+                Console.WriteLine("[{0},{1}];[{2},{3}];[{4},{5}]", x, y, rectMain.Left, rectMain.Top, rect.Left, rect.Top);
                 //Ctrl+A
                 Win32Api.keybd_event(WM_CTRL, 0, 0, 0);
                 Win32Api.keybd_event(WM_A, 0, 0, 0);
@@ -201,7 +212,7 @@ namespace T14_WinApi
                     }
                     else
                     {
-                        label2.Text = String.Format("坐标 x:{0},y:{1},z:{2}", axis.x, axis.y, axis.z);
+                        label2.Text = String.Format("x:{0},y:{1},z:{2}", axis.x, axis.y, axis.z);
                         if (axis.err)
                         {
                             label2.Text = "err";
@@ -214,6 +225,10 @@ namespace T14_WinApi
                         if (radioLine.Checked)
                         {
                             linePoints.Add(axis);
+                        }
+                        if (checkBoxZoom.Checked)
+                        {
+                            sendCommand(String.Format("zoom c {0},{1}  ", axis.x, axis.y));
                         }
                     }
                 }
@@ -230,13 +245,18 @@ namespace T14_WinApi
         private Axis axisParser(string data)
         {
             string str = data.Trim();
-            Axis axis = new Axis() { x = 0, y = 0, z = 0, err = false };
+            Axis axis = new Axis() { x = 0, y = 0, z = 0, err = true };
             if (string.IsNullOrEmpty(str))
             {
-                axis.err = true;
                 return axis;
             }
             Regex reg = new Regex(@"^\w+:\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)m$", RegexOptions.IgnoreCase);
+            Regex regDeg = new Regex(@"^\w+:\s+([\d.]+)n\s+([\d.]+)e\s+([\d.]+)m$", RegexOptions.IgnoreCase);
+            if (regDeg.IsMatch(str))
+            {
+                label2.Text = "坐标格式不正确";
+                return axis;
+            }
             str = Regex.Replace(str, @"\s+", " ");
             if (reg.IsMatch(str))
             {
@@ -244,6 +264,7 @@ namespace T14_WinApi
                 axis.x = double.Parse(match.Groups[1].Value);
                 axis.y = double.Parse(match.Groups[2].Value);
                 axis.z = double.Parse(match.Groups[3].Value);
+                axis.err = false;
             }
             return axis;
         }
@@ -355,6 +376,38 @@ namespace T14_WinApi
             command += "C";
             sendCommand(command);
             linePoints.Clear();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            IntPtr mwh = Win32Api.FindMainWindowHandle(null, "Measurements", 100, 1);
+            if (mwh != IntPtr.Zero)
+            {
+                Point screenPoint = Control.MousePosition;
+                int x = screenPoint.X;
+                int y = screenPoint.Y;
+
+                Win32Api.SetWindowPos(mwh, -1, 0, 0, 0, 0, 1 | 2);
+                Win32Api.RECT rect = new Win32Api.RECT();
+                Win32Api.GetWindowRect(mwh, ref rect);
+                Win32Api.SetActiveWindow(mwh);
+                bool fore = Win32Api.SetForegroundWindow(mwh);
+
+                Win32Api.SetCursorPos(rect.Left + 50, rect.Top + 55);
+                Win32Api.mouse_event(0x0002, 0, 0, 0, 0);
+                Win32Api.mouse_event(0x0004, 0, 0, 0, 0);
+
+                Win32Api.SetCursorPos((rect.Right + rect.Left) / 2, (rect.Bottom + rect.Top) / 2); //设置鼠标位置
+                Win32Api.mouse_event(0x0002, 0, 0, 0, 0); //鼠标按下
+                Win32Api.mouse_event(0x0004, 0, 0, 0, 0);//鼠标松开
+
+                Win32Api.SetCursorPos(x, y);
+                MessageBox.Show("已连接");
+            }
+            else
+            {
+                MessageBox.Show("测量窗口未找到");
+            }
         }
     }
 }

@@ -1,0 +1,6 @@
+Windows Registry Editor Version 5.00
+[HKEY_CURRENT_USER\Software\Autodesk\AutoCAD\R17.1\ACAD-6001:409\Applications\T16-CADClassLibrary]
+"DESCRIPTION"="T16-CADClassLibrary"
+"LOADCTRLS"=dword:00000014
+"LOADER"="M:\Documents\AE\T16-CADClassLibrary\bin\Debug\T16-CADClassLibrary.dll"
+"MANAGED"=dword:00000001

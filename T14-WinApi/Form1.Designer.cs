@@ -28,30 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
             this.radioPoint = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.radioLine = new System.Windows.Forms.RadioButton();
+            this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.checkBoxZoom = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label1.Location = new System.Drawing.Point(0, 112);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 12);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "[0,0]";
             // 
             // radioPoint
             // 
             this.radioPoint.AutoSize = true;
-            this.radioPoint.Location = new System.Drawing.Point(56, 20);
+            this.radioPoint.Location = new System.Drawing.Point(31, 20);
             this.radioPoint.Name = "radioPoint";
             this.radioPoint.Size = new System.Drawing.Size(47, 16);
             this.radioPoint.TabIndex = 2;
@@ -60,6 +51,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBoxZoom);
             this.groupBox1.Controls.Add(this.radioLine);
             this.groupBox1.Controls.Add(this.radioPoint);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -68,31 +60,30 @@
             this.groupBox1.Size = new System.Drawing.Size(284, 43);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "图形类型";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label2.Location = new System.Drawing.Point(0, 43);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 12);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "label2";
             // 
             // radioLine
             // 
             this.radioLine.AutoSize = true;
-            this.radioLine.Location = new System.Drawing.Point(170, 20);
+            this.radioLine.Location = new System.Drawing.Point(139, 20);
             this.radioLine.Name = "radioLine";
             this.radioLine.Size = new System.Drawing.Size(47, 16);
             this.radioLine.TabIndex = 3;
             this.radioLine.Text = "画线";
             this.radioLine.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label2.Location = new System.Drawing.Point(0, 121);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 12);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "label2";
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(56, 70);
+            this.button1.Location = new System.Drawing.Point(31, 70);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(81, 26);
             this.button1.TabIndex = 5;
@@ -102,7 +93,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(170, 70);
+            this.button2.Location = new System.Drawing.Point(139, 70);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(81, 26);
             this.button2.TabIndex = 6;
@@ -110,16 +101,38 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // button3
+            // 
+            this.button3.ForeColor = System.Drawing.Color.Red;
+            this.button3.Location = new System.Drawing.Point(203, 107);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(81, 26);
+            this.button3.TabIndex = 7;
+            this.button3.Text = "连接";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // checkBoxZoom
+            // 
+            this.checkBoxZoom.AutoSize = true;
+            this.checkBoxZoom.Location = new System.Drawing.Point(224, 20);
+            this.checkBoxZoom.Name = "checkBoxZoom";
+            this.checkBoxZoom.Size = new System.Drawing.Size(48, 16);
+            this.checkBoxZoom.TabIndex = 8;
+            this.checkBoxZoom.Text = "同屏";
+            this.checkBoxZoom.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 124);
+            this.ClientSize = new System.Drawing.Size(284, 133);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "联动";
@@ -133,13 +146,14 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RadioButton radioPoint;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton radioLine;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.CheckBox checkBoxZoom;
 
     }
 }

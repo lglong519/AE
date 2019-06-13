@@ -80,12 +80,8 @@ namespace T14_WinApi
                 }
             }
             while (!formFound && attempts < maxTries);
-
-            if (mwh == IntPtr.Zero)
-                throw new Exception(String.Format("窗口未找到:[{0}]", caption));
-            else
-                return mwh;
-        }     
+            return mwh;
+        }
 
         #region 全局鼠标
         [StructLayout(LayoutKind.Sequential)]

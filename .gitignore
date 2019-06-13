@@ -1,6 +1,7 @@
 **/Debug/*
 **/Release/*
 !**/*.bat
+!**/*.reg
 obj/
 *.suo
 *.lock
